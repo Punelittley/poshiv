@@ -23,12 +23,13 @@ em { color: var(--wine); font-family: var(--serif); font-style: italic; }
 .header { height: 78px; padding: 0 3vw; display: grid; grid-template-columns: .8fr 1.4fr auto auto; gap: 18px; align-items: center; border-bottom: 1px solid var(--line); position: relative; z-index: 20; background: rgba(244,241,234,.94); backdrop-filter: blur(14px); }
 .logo { font-family: var(--serif); font-size: 19px; letter-spacing: .17em; line-height: 1; }
 .logo span { display: block; margin-top: 7px; font: 500 7px/1 var(--sans); letter-spacing: .34em; text-transform: uppercase; }
-.nav { display: flex; justify-content: center; gap: clamp(20px, 2.2vw, 38px); font-size: 11px; letter-spacing: .035em; }
-.nav a { position: relative; padding: 8px 0; }
-.nav a::after { content: ""; position: absolute; left: 0; right: 100%; bottom: 2px; height: 1px; background: var(--wine); transition: .3s; }
-.nav a:hover::after, .nav a.active::after { right: 0; }
-.header-phone { justify-self: end; padding: 10px 14px; border: 1px solid var(--line); font-size: 10px; letter-spacing: .08em; transition: .25s; }
-.header-phone:hover { color: var(--white); border-color: var(--teal); background: var(--teal); }
+.nav { display: flex; justify-content: center; gap: clamp(8px, 1.2vw, 18px); font-size: 11px; letter-spacing: .04em; }
+.nav a { position: relative; padding: 8px 16px; border-radius: 999px; color: var(--ink); font-weight: 500; transition: background .25s ease, color .25s ease, transform .25s ease; }
+.nav a:hover { background: rgba(7, 83, 84, 0.08); color: var(--wine); transform: translateY(-1px); }
+.nav a.active { background: var(--teal); color: var(--white); }
+.nav a.active:hover { background: var(--wine); color: var(--white); }
+.header-phone { justify-self: end; padding: 9px 18px; border-radius: 999px; border: 1px solid var(--line); font-size: 10px; font-weight: 600; letter-spacing: .08em; transition: all .25s ease; }
+.header-phone:hover { color: var(--white); border-color: var(--wine); background: var(--wine); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(103, 36, 61, 0.16); }
 .cart-button { min-width: 88px; padding: 10px 12px; border: 1px solid var(--ink); color: var(--ink); background: transparent; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
 .cart-button span { min-width: 17px; height: 17px; margin-left: 7px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: var(--white); background: var(--wine); font-size: 8px; }
 .menu-button { display: none; border: 0; background: none; width: 40px; height: 40px; padding: 10px; }
@@ -473,7 +474,8 @@ details p { max-width: 600px; padding: 0 40px 25px 0; color: #5f716f; font-size:
   .header-phone { display: none; }
   .menu-button { display: block; z-index: 2; }
   .nav { position: fixed; inset: 0; padding: 130px 32px 40px; display: flex; flex-direction: column; gap: 12px; transform: translateX(100%); color: var(--white); background: var(--teal); transition: .4s; }
-  .nav a { font: 34px var(--serif); }
+  .nav a { font: 34px var(--serif); padding: 6px 18px; border-radius: 8px; width: fit-content; }
+  .nav a:hover, .nav a.active { background: rgba(255,255,255,.16); color: var(--white); transform: translateX(6px); }
   .menu-open .nav { transform: none; }
   .menu-open .menu-button i { background: var(--white); }
   .menu-open .menu-button i:first-child { transform: translateY(4px) rotate(45deg); }
