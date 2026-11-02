@@ -402,6 +402,8 @@ body.vk-modal-open .vk-modal-container { transform: translateY(0) scale(1); }
 .contact-v2-direct a { font: 21px var(--serif); }
 .contact-v2-direct small { display: block; margin-bottom: 3px; color: #91aaa6; font: 8px var(--sans); letter-spacing: .14em; text-transform: uppercase; }
 .contact-v2-hours { margin-top: auto; padding-top: 18px; display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,.25); color: #9db5b1; font-size: 8px; letter-spacing: .12em; text-transform: uppercase; }
+.contact-v2-image { position: relative; min-height: 100%; overflow: hidden; }
+.contact-v2-image img { width: 100%; height: 100%; object-fit: cover; }
 .contact-v2-panel { padding: 55px 6vw; display: flex; align-items: center; background: var(--paper-deep); }
 .contact-v2-panel .contact-form { width: 100%; max-width: 620px; margin: auto; }
 .form-heading { margin-bottom: 45px; }
@@ -645,9 +647,8 @@ details p { max-width: 600px; padding: 0 40px 25px 0; color: #5f716f; font-size:
   .studio-facts { grid-template-columns: 1fr; }
   .studio-facts div { padding: 30px 24px; border-right: 0; border-bottom: 1px solid rgba(255,255,255,.2); }
   .contact-v2 { min-height: auto; grid-template-columns: 1fr; }
-  .contact-v2-copy { min-height: 680px; padding: 70px 28px 45px; }
-  .contact-v2-panel { padding: 70px 24px; }
-  .contact-v2-panel .contact-form { max-width: none; }
+  .contact-v2-copy { min-height: auto; padding: 70px 28px 45px; }
+  .contact-v2-image { height: 480px; }
   .hero-v4 { min-height: auto; padding: 24px 24px 36px; }
   .hero-v4-title { padding: 65px 0 45px; grid-template-columns: 1fr; gap: 28px; }
   .hero-v4-title h1 { font-size: 75px; }
@@ -693,12 +694,11 @@ details p { max-width: 600px; padding: 0 40px 25px 0; color: #5f716f; font-size:
   .studio-principles { padding-left: 22px; padding-right: 22px; }
   .studio-principles article { padding: 25px 0; border-right: 0; }
   .studio-facts strong { font-size: 36px; }
-  .contact-v2-copy { min-height: 620px; padding: 55px 22px 35px; }
+  .contact-v2-copy { min-height: auto; padding: 55px 22px 35px; }
   .contact-v2-copy h1 { margin: 45px 0 28px; font-size: 57px; }
   .contact-v2-direct a { font-size: 18px; }
   .contact-v2-hours { flex-wrap: wrap; gap: 12px; }
-  .contact-v2-panel { padding: 55px 18px; }
-  .contact-v2-panel .contact-form { padding: 30px 22px; }
+  .contact-v2-image { height: 380px; }
   .form-heading h2 { font-size: 30px; }
   .hero-v4 { padding: 20px 18px 30px; }
   .hero-v4-top { grid-template-columns: 1fr auto; }
