@@ -172,9 +172,18 @@ document.querySelectorAll('.hero-shop-product').forEach((hero) => {
 document.querySelectorAll('.product-info a, [data-vk-modal]').forEach((link) => {
   link.addEventListener('click', (e) => {
     const card = link.closest('.product-card')
+    const caseEl = link.closest('.project-case')
     if (card) {
       e.preventDefault()
       openVkModal(getCardData(card))
+    } else if (caseEl) {
+      e.preventDefault()
+      openVkModal({
+        name: caseEl.querySelector('h2')?.textContent.trim() || 'Проект студии VERÉSA',
+        price: caseEl.querySelector('.project-case-price')?.textContent.trim() || '',
+        image: caseEl.querySelector('img')?.getAttribute('src') || '/images/project-living-real.jpg',
+        badge: caseEl.querySelector('.project-case-badge')?.textContent.trim() || 'Реализованный проект'
+      })
     }
   })
 })
