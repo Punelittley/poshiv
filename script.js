@@ -1,17 +1,36 @@
 const menuButton = document.querySelector('.menu-button')
 const navigation = document.querySelector('.nav')
 
-menuButton?.addEventListener('click', () => {
-  const isOpen = document.body.classList.toggle('menu-open')
-  menuButton.setAttribute('aria-expanded', String(isOpen))
+function toggleMenu(forceState) {
+  const isOpen = typeof forceState === 'boolean'
+    ? forceState
+    : !document.body.classList.contains('menu-open')
+
+  document.body.classList.toggle('menu-open', isOpen)
+  menuButton?.setAttribute('aria-expanded', String(isOpen))
+  if (isOpen) {
+    document.documentElement.style.overflow = 'hidden'
+  } else {
+    document.documentElement.style.overflow = ''
+  }
+}
+
+menuButton?.addEventListener('click', () => toggleMenu())
+
+// Close menu when clicking outside drawer or on nav links
+document.querySelectorAll('.nav a').forEach((link) => {
+  link.addEventListener('click', () => toggleMenu(false))
 })
 
-document.querySelectorAll('.nav a').forEach((link) => {
-  link.addEventListener('click', () => {
-    document.body.classList.remove('menu-open')
-    menuButton?.setAttribute('aria-expanded', 'false')
-  })
-})
+// Header scroll state for sticky header shadow
+const headerEl = document.querySelector('.header')
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 10) {
+    headerEl?.classList.add('is-scrolled')
+  } else {
+    headerEl?.classList.remove('is-scrolled')
+  }
+}, { passive: true })
 
 const observer = new IntersectionObserver(
   (entries) => entries.forEach((entry) => {
@@ -187,3 +206,39 @@ document.querySelectorAll('.product-info a, [data-vk-modal]').forEach((link) => 
     }
   })
 })
+
+// Mobile Navigation Contacts Drawer Block
+if (navigation && !navigation.querySelector('.nav-mobile-contacts')) {
+  const mobContacts = document.createElement('div')
+  mobContacts.className = 'nav-mobile-contacts'
+  mobContacts.innerHTML = `
+    <span class="nav-mob-badge">Прямой контакт</span>
+    <a class="nav-mob-phone" href="tel:+79000000000">+7 900 000-00-00</a>
+    <a class="nav-mob-vk" href="${VK_LINK}" target="_blank" rel="noopener noreferrer">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right:8px;"><path d="M15.684 0H8.316C2.992 0 0 2.992 0 8.316v7.368C0 21.008 2.992 24 8.316 24h7.368C21.008 24 24 21.008 24 15.684V8.316C24 2.992 21.008 0 15.684 0zm3.602 17.158h-1.872c-.708 0-.924-.564-2.196-1.836-1.108-1.072-1.6-1.212-1.872-1.212-.384 0-.492.108-.492.624v1.656c0 .444-.144.768-1.296.768-1.908 0-4.032-1.156-5.52-3.324-2.256-3.192-2.88-5.604-2.88-6.096 0-.276.108-.528.624-.528h1.872c.468 0 .648.216.828.708 1.008 2.892 2.688 5.436 3.384 5.436.264 0 .384-.12.384-.78V10.87c-.084-1.392-.816-1.512-.816-2.004 0-.24.192-.468.516-.468h2.952c.42 0 .576.228.576.732v3.96c0 .42.192.576.312.576.264 0 .48-.156.972-.648 1.5-1.68 2.58-4.236 2.58-4.236.144-.312.384-.528.852-.528h1.872c.564 0 .684.288.564.732-.24 1.092-2.508 4.308-2.616 4.488-.228.36-.312.528 0 .948.228.312.984 1.008 1.488 1.62 1.044 1.2 1.848 2.208 2.064 2.892.12.384-.12.576-.564.576z"/></svg>
+      Написать в VK
+    </a>
+    <span class="nav-mob-hours">Москва и МО · Пн—Вс 10:00–19:00</span>
+  `
+  navigation.appendChild(mobContacts)
+}
+
+// 152-FZ Cookie Consent Banner
+if (!localStorage.getItem('cookie_consent_accepted')) {
+  const cookieBanner = document.createElement('div')
+  cookieBanner.className = 'cookie-banner'
+  cookieBanner.innerHTML = `
+    <div class="cookie-banner-inner">
+      <p>Мы используем файлы cookie для удобства работы сайта и сбора аналитики в соответствии с <a href="/privacy.html">152-ФЗ РФ и Политикой конфиденциальности</a>.</p>
+      <button type="button" class="cookie-banner-btn">Принять</button>
+    </div>
+  `
+  document.body.appendChild(cookieBanner)
+  setTimeout(() => cookieBanner.classList.add('is-visible'), 400)
+
+  cookieBanner.querySelector('.cookie-banner-btn')?.addEventListener('click', () => {
+    localStorage.setItem('cookie_consent_accepted', 'true')
+    cookieBanner.classList.remove('is-visible')
+    setTimeout(() => cookieBanner.remove(), 400)
+  })
+}
