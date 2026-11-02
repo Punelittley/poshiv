@@ -1,0 +1,10 @@
+{
+  "description": "Explore custom curtain design, tailoring, and installation services in Moscow, with inspiration and project photos to help create a polished interior.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
