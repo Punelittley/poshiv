@@ -143,7 +143,7 @@ document.addEventListener('keydown', (event) => {
 })
 
 const getCardData = (card) => {
-  const name = card.dataset.name || card.querySelector('h2, h3')?.textContent.trim() || 'Услуга VERÉSA'
+  const name = card.dataset.name || card.querySelector('h2, h3')?.textContent.trim() || 'Услуга Татьяны Вересовой'
   const price = card.querySelector('.price strong, strong')?.textContent.trim() || card.dataset.price || ''
   const image = card.dataset.image || card.querySelector('img')?.getAttribute('src') || '/images/project-living-real.jpg'
   const badge = card.querySelector('.product-image span, small')?.textContent.trim() || 'Услуга студии'
@@ -208,7 +208,7 @@ document.querySelectorAll('.product-info a, [data-vk-modal]').forEach((link) => 
     } else if (caseEl) {
       e.preventDefault()
       openVkModal({
-        name: caseEl.querySelector('h2')?.textContent.trim() || 'Проект студии VERÉSA',
+        name: caseEl.querySelector('h2')?.textContent.trim() || 'Проект Татьяны Вересовой',
         price: caseEl.querySelector('.project-case-price')?.textContent.trim() || '',
         image: caseEl.querySelector('img')?.getAttribute('src') || '/images/project-living-real.jpg',
         badge: caseEl.querySelector('.project-case-badge')?.textContent.trim() || 'Реализованный проект'
