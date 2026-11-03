@@ -425,14 +425,17 @@ body.vk-modal-open .vk-modal-container { transform: translateY(0) scale(1); }
 .page-hero > p:last-child { max-width: 560px; color: #5a6e6c; }
 .page-hero-row { display: grid; grid-template-columns: 1.4fr .6fr; align-items: end; gap: 60px; }
 .service-catalog { padding-top: 40px; }
-.catalog-item { min-height: 560px; padding: 90px 0; display: grid; grid-template-columns: 50px 1fr .9fr; gap: 5vw; align-items: center; border-bottom: 1px solid var(--line); }
-.catalog-item.reverse img { order: -1; }
-.catalog-item > span { align-self: start; color: var(--wine); font: 13px var(--serif); }
-.catalog-item h2 { font: clamp(38px, 4vw, 58px)/1.1 var(--serif); }
-.catalog-item p { color: #5c706d; }
-.catalog-item ul { margin: 30px 0 0; padding: 0; list-style: none; }
-.catalog-item li { padding: 9px 0; border-top: 1px solid var(--line); font-size: 12px; }
-.catalog-item img { height: 460px; }
+.catalog-item { min-height: 560px; padding: 90px 0; display: grid; grid-template-columns: 50px 1.1fr .9fr; gap: 5vw; align-items: center; border-bottom: 1px solid var(--line); }
+.catalog-item.reverse { grid-template-columns: .9fr 50px 1.1fr; }
+.catalog-item.reverse img { order: 1; }
+.catalog-item.reverse > span { order: 2; align-self: start; }
+.catalog-item.reverse > div { order: 3; }
+.catalog-item > span { align-self: start; color: var(--wine); font: 14px var(--serif); padding-top: 10px; }
+.catalog-item h2 { margin: 0 0 16px; font: clamp(34px, 3.8vw, 54px)/1.12 var(--serif); }
+.catalog-item p { color: #5c706d; font-size: 13.5px; line-height: 1.6; }
+.catalog-item ul { margin: 28px 0 0; padding: 0; list-style: none; }
+.catalog-item li { padding: 10px 0; border-top: 1px solid var(--line); font-size: 12.5px; }
+.catalog-item img { width: 100%; height: 480px; object-fit: cover; border-radius: 4px; }
 .catalog-hero { padding: 100px 8vw 70px; display: grid; grid-template-columns: .32fr 1fr; gap: 5vw; border-bottom: 1px solid var(--line); }
 .catalog-hero h1 { margin: 0 0 26px; font: clamp(54px, 7vw, 96px)/1 var(--serif); letter-spacing: -.045em; }
 .catalog-hero div p { max-width: 620px; color: #5f716e; }
@@ -714,6 +717,27 @@ details p { max-width: 600px; padding: 0 40px 25px 0; color: #5f716f; font-size:
   .contact-v2 { min-height: auto; grid-template-columns: 1fr; }
   .contact-v2-copy { padding: 55px 28px 35px; }
   .contact-v2-image { height: 400px; }
+
+  /* Services catalog items on tablet */
+  .catalog-item, .catalog-item.reverse {
+    min-height: auto;
+    grid-template-columns: 40px 1fr;
+    gap: 24px;
+    padding: 60px 0;
+  }
+  .catalog-item > span, .catalog-item.reverse > span {
+    order: 1;
+  }
+  .catalog-item > div, .catalog-item.reverse > div {
+    order: 2;
+  }
+  .catalog-item img, .catalog-item.reverse img {
+    order: 3;
+    grid-column: 1 / -1;
+    height: 380px;
+    width: 100%;
+    margin-top: 10px;
+  }
 }
 
 /* =========================================================
@@ -1044,6 +1068,38 @@ details p { max-width: 600px; padding: 0 40px 25px 0; color: #5f716f; font-size:
   .catalog-hero-material > div { left: 10px; right: 10px; bottom: 10px; padding: 14px; border-radius: 3px; }
   .catalog-toolbar { top: 0; min-height: 52px; padding: 0 16px; gap: 16px; }
   .catalog-toolbar a { font-size: 11px; white-space: nowrap; }
+
+  /* Services catalog items on mobile */
+  .catalog-item, .catalog-item.reverse {
+    min-height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 38px 0;
+  }
+  .catalog-item > span, .catalog-item.reverse > span {
+    order: 1;
+    font-size: 13px;
+    padding: 0;
+  }
+  .catalog-item > div, .catalog-item.reverse > div {
+    order: 2;
+  }
+  .catalog-item h2 {
+    font-size: clamp(26px, 7vw, 36px);
+    margin: 6px 0 12px;
+  }
+  .catalog-item p {
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+  .catalog-item img, .catalog-item.reverse img {
+    order: 3;
+    height: 240px;
+    width: 100%;
+    border-radius: 4px;
+    margin-top: 8px;
+  }
 
   /* Portfolio Case Details */
   .portfolio-hero, .portfolio-hero-copy { min-height: 420px; }
