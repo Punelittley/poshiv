@@ -27,6 +27,13 @@ if (!menuBackdrop) {
 }
 menuBackdrop.addEventListener('click', () => toggleMenu(false))
 
+// Close menu when clicking outside navigation
+document.addEventListener('click', (event) => {
+  if (!document.body.classList.contains('menu-open')) return
+  if (event.target.closest('.nav') || event.target.closest('.menu-button')) return
+  toggleMenu(false)
+})
+
 // Close menu when clicking on nav links
 document.querySelectorAll('.nav a').forEach((link) => {
   link.addEventListener('click', () => toggleMenu(false))
