@@ -88,7 +88,7 @@ vkModalOverlay.innerHTML = `
     <p class="vk-modal-lead">Подготовим предварительный расчёт, покажем образцы тканей и согласуем выезд на замер прямо в личных сообщениях группы ВКонтакте.</p>
     
     <div class="vk-modal-product">
-      <img class="vk-modal-img" src="/images/project-living-real.jpg" alt="Выбранная услуга">
+      <img class="vk-modal-img" src="./images/project-living-real.jpg" alt="Выбранная услуга">
       <div class="vk-modal-product-text">
         <span class="vk-modal-category">Услуга студии</span>
         <h4 class="vk-modal-name">Шторы на заказ под ключ</h4>
@@ -144,7 +144,7 @@ document.addEventListener('keydown', (event) => {
 const getCardData = (card) => {
   const name = card.dataset.name || card.querySelector('h2, h3')?.textContent.trim() || 'Услуга Татьяны Вересовой'
   const price = card.querySelector('.price strong, strong')?.textContent.trim() || card.dataset.price || ''
-  const image = card.dataset.image || card.querySelector('img')?.getAttribute('src') || '/images/project-living-real.jpg'
+  const image = card.dataset.image || card.querySelector('img')?.getAttribute('src') || './images/project-living-real.jpg'
   const badge = card.querySelector('.product-image span, small')?.textContent.trim() || 'Услуга студии'
   return { name, price, image, badge }
 }
@@ -190,7 +190,7 @@ document.querySelectorAll('.hero-shop-product').forEach((hero) => {
     openVkModal({
       name: hero.querySelector('h2, h3')?.textContent.trim() || 'Шторы на заказ под ключ',
       price: hero.querySelector('strong')?.textContent.trim() || 'от 18 000 ₽',
-      image: hero.querySelector('img')?.getAttribute('src') || '/images/project-living-real.jpg',
+      image: hero.querySelector('img')?.getAttribute('src') || './images/project-living-real.jpg',
       badge: 'Реальный объект'
     })
   })
@@ -209,7 +209,7 @@ document.querySelectorAll('.product-info a, [data-vk-modal]').forEach((link) => 
       openVkModal({
         name: caseEl.querySelector('h2')?.textContent.trim() || 'Проект Татьяны Вересовой',
         price: caseEl.querySelector('.project-case-price')?.textContent.trim() || '',
-        image: caseEl.querySelector('img')?.getAttribute('src') || '/images/project-living-real.jpg',
+        image: caseEl.querySelector('img')?.getAttribute('src') || './images/project-living-real.jpg',
         badge: caseEl.querySelector('.project-case-badge')?.textContent.trim() || 'Реализованный проект'
       })
     }
@@ -238,7 +238,7 @@ if (!localStorage.getItem('cookie_consent_accepted')) {
   cookieBanner.className = 'cookie-banner'
   cookieBanner.innerHTML = `
     <div class="cookie-banner-inner">
-      <p>Мы используем файлы cookie для удобства работы сайта и сбора аналитики в соответствии с <a href="/privacy.html">152-ФЗ РФ и Политикой конфиденциальности</a>.</p>
+      <p>Мы используем файлы cookie для удобства работы сайта и сбора аналитики в соответствии с <a href="./privacy.html">152-ФЗ РФ и Политикой конфиденциальности</a>.</p>
       <button type="button" class="cookie-banner-btn">Принять</button>
     </div>
   `
