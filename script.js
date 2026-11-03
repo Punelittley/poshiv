@@ -1,3 +1,33 @@
+// Site Intro Curtain Animation
+const siteIntro = document.getElementById('siteIntro')
+if (siteIntro) {
+  let isClosed = false
+  const closeIntro = () => {
+    if (isClosed) return
+    isClosed = true
+    siteIntro.classList.add('is-opening')
+    setTimeout(() => {
+      siteIntro.classList.add('is-dismissed')
+    }, 1100)
+  }
+
+  // Auto-play opening transition
+  const timer = setTimeout(closeIntro, 1600)
+
+  // Click anywhere to open immediately
+  siteIntro.addEventListener('click', () => {
+    clearTimeout(timer)
+    closeIntro()
+  })
+
+  // Skip button
+  siteIntro.querySelector('.intro-skip')?.addEventListener('click', (e) => {
+    e.stopPropagation()
+    clearTimeout(timer)
+    closeIntro()
+  })
+}
+
 const menuButton = document.querySelector('.menu-button')
 const navigation = document.querySelector('.nav')
 
