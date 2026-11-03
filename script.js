@@ -17,7 +17,17 @@ function toggleMenu(forceState) {
 
 menuButton?.addEventListener('click', () => toggleMenu())
 
-// Close menu when clicking outside drawer or on nav links
+// Mobile menu backdrop overlay
+let menuBackdrop = document.querySelector('.menu-backdrop')
+if (!menuBackdrop) {
+  menuBackdrop = document.createElement('div')
+  menuBackdrop.className = 'menu-backdrop'
+  menuBackdrop.setAttribute('aria-hidden', 'true')
+  document.body.appendChild(menuBackdrop)
+}
+menuBackdrop.addEventListener('click', () => toggleMenu(false))
+
+// Close menu when clicking on nav links
 document.querySelectorAll('.nav a').forEach((link) => {
   link.addEventListener('click', () => toggleMenu(false))
 })
