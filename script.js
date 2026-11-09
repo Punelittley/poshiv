@@ -258,3 +258,80 @@ if (!localStorage.getItem('cookie_consent_accepted')) {
     setTimeout(() => cookieBanner.remove(), 400)
   })
 }
+
+// =========================================================
+// TATIANA VERESOVA: ALBUM FILTERING, CALLBACK & SERVICE MODALS
+// =========================================================
+
+// 1. Portfolio Album Filtering
+const filterBtns = document.querySelectorAll('.album-filter-btn')
+const albumCards = document.querySelectorAll('.album-card')
+
+filterBtns.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    filterBtns.forEach((b) => b.classList.remove('is-active'))
+    btn.classList.add('is-active')
+    const filter = btn.dataset.filter
+
+    albumCards.forEach((card) => {
+      const categories = (card.dataset.category || '').split(' ')
+      if (filter === 'all' || categories.includes(filter)) {
+        card.classList.remove('is-hidden')
+      } else {
+        card.classList.add('is-hidden')
+      }
+    })
+  })
+})
+
+// 2. Callback Modal Handling
+const callbackOverlay = document.querySelector('.callback-modal-overlay')
+const openCallbackBtns = document.querySelectorAll('[data-callback-modal]')
+const closeCallbackBtn = document.querySelector('.callback-modal-close')
+const callbackForm = document.querySelector('.callback-form')
+
+openCallbackBtns.forEach((btn) => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault()
+    document.body.classList.add('callback-modal-open')
+  })
+})
+
+closeCallbackBtn?.addEventListener('click', () => {
+  document.body.classList.remove('callback-modal-open')
+})
+
+callbackOverlay?.addEventListener('click', (e) => {
+  if (e.target === callbackOverlay) {
+    document.body.classList.remove('callback-modal-open')
+  }
+})
+
+callbackForm?.addEventListener('submit', (e) => {
+  e.preventDefault()
+  const card = callbackForm.closest('.callback-modal-card')
+  card?.classList.add('is-sent')
+  setTimeout(() => {
+    document.body.classList.remove('callback-modal-open')
+    setTimeout(() => {
+      card?.classList.remove('is-sent')
+      callbackForm.reset()
+    }, 400)
+  }, 2500)
+})
+
+// 3. Service Card Click Handling (opens detail dialog)
+document.querySelectorAll('.service-card-v3').forEach((card) => {
+  card.addEventListener('click', (e) => {
+    if (e.target.closest('.vk-order-btn')) return
+    const name = card.querySelector('h3')?.textContent.trim() || 'Услуга Татьяны Вересовой'
+    const image = card.querySelector('img')?.getAttribute('src') || './images/product-visualization.jpg'
+    const badge = card.querySelector('.service-card-v3-num')?.textContent.trim() || 'Услуга студии'
+    openVkModal({
+      name,
+      price: 'Индивидуальный расчёт',
+      image,
+      badge
+    })
+  })
+})
