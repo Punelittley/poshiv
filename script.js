@@ -99,7 +99,7 @@ vkModalOverlay.innerHTML = `
       <div class="vk-modal-product-text">
         <span class="vk-modal-category">Услуга студии</span>
         <h4 class="vk-modal-name">Шторы на заказ под ключ</h4>
-        <div class="vk-modal-price">от 18 000 ₽</div>
+        <div class="vk-modal-price">Индивидуальный расчёт</div>
       </div>
     </div>
 
@@ -196,7 +196,7 @@ document.querySelectorAll('.hero-shop-product').forEach((hero) => {
     e.stopPropagation()
     openVkModal({
       name: hero.querySelector('h2, h3')?.textContent.trim() || 'Шторы на заказ под ключ',
-      price: hero.querySelector('strong')?.textContent.trim() || 'от 18 000 ₽',
+      price: hero.querySelector('strong')?.textContent.trim() || 'Индивидуальный расчёт',
       image: hero.querySelector('img')?.getAttribute('src') || './images/product-visualization.jpg',
       badge: 'Авторский проект'
     })
