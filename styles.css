@@ -212,8 +212,8 @@ em { color: var(--wine); font-family: var(--serif); font-style: italic; }
 .hero-shop-copy > p { max-width: 520px; margin: 34px 0 0; color: #5d706d; font-size: 13px; }
 .hero-shop-actions { margin-top: 38px; display: flex; align-items: center; gap: 30px; }
 .hero-shop-actions > a:last-child { padding-bottom: 4px; border-bottom: 1px solid var(--ink); font-size: 10px; letter-spacing: .08em; }
-.hero-shop-categories { margin-top: 10vh; padding-top: 22px; display: grid; gap: 12px; border-top: 1px solid var(--line); }
-.hero-shop-categories a { display: flex; justify-content: space-between; color: #566a67; font-size: 11px; transition: color .2s; }
+.hero-shop-categories { margin-top: 5vh; padding-top: 22px; display: grid; gap: 12px; border-top: 1px solid var(--line); }
+.hero-shop-categories span, .hero-shop-categories a { display: flex; align-items: center; gap: 10px; color: #566a67; font-size: 11.5px; }
 .hero-shop-categories a:hover { color: var(--wine); }
 .hero-shop-product { min-height: 680px; display: grid; grid-template-rows: 1fr auto; border: 1px solid var(--line); background: var(--white); }
 .hero-shop-image { min-height: 0; position: relative; overflow: hidden; }
@@ -231,6 +231,24 @@ em { color: var(--wine); font-family: var(--serif); font-style: italic; }
 .product-grid-home .product-card-featured .product-info > .store-add { width: auto; margin: 0 0 0 14px; border-color: var(--white); color: var(--teal); background: var(--white); }
 .product-grid-home .product-card-featured .product-info > .vk-order-btn:hover,
 .product-grid-home .product-card-featured .product-info > .store-add:hover { border-color: var(--wine); color: var(--white); background: var(--wine); }
+
+/* Quick calculation banner */
+.calc-banner {
+  background: var(--paper-deep);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 56px 8vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 36px;
+}
+.calc-banner-copy { max-width: 660px; }
+.calc-banner-badge { font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: var(--wine); font-weight: 600; display: block; margin-bottom: 10px; }
+.calc-banner h3 { font: clamp(24px, 3vw, 36px)/1.2 var(--serif); margin: 0 0 12px; color: var(--ink); }
+.calc-banner p { margin: 0; color: #556c68; font-size: 14px; line-height: 1.6; }
+.calc-banner-action { flex-shrink: 0; }
+.calc-banner .button { min-height: 54px; padding: 0 32px; font-size: 12.5px; }
 
 /* VK Modal Dialog */
 .vk-modal-overlay { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; background: rgba(10, 31, 30, 0.65); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); opacity: 0; visibility: hidden; transition: opacity .3s cubic-bezier(0.16, 1, 0.3, 1), visibility .3s; }
@@ -717,6 +735,8 @@ body.menu-open .header { z-index: 1005; }
   .menu-open .menu-button i:last-child { transform: translateY(-3px) rotate(-45deg); }
 
   .section { padding: 75px 28px; }
+  .calc-banner { padding: 44px 28px; flex-direction: column; align-items: flex-start; gap: 24px; }
+  .calc-banner .button { width: 100%; }
   .hero-shop { min-height: auto; padding: 65px 28px; grid-template-columns: 1fr; gap: 48px; }
   .hero-shop-copy h1 { font-size: clamp(48px, 8vw, 70px); }
   .hero-shop-product { min-height: 600px; }
