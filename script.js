@@ -279,75 +279,45 @@ leadForm?.addEventListener('submit', async (e) => {
   }
 })
 
-const getCardData = (card) => {
-  const name = card.dataset.name || card.querySelector('h2, h3')?.textContent.trim() || 'Услуга Татьяны Вересовой'
-  const image = card.dataset.image || card.querySelector('img')?.getAttribute('src') || './images/product-visualization.jpg'
-  const badge = card.querySelector('.product-image span, .offering-badge, .album-card-tag, .project-case-badge, small')?.textContent.trim() || 'Услуга студии'
-  return { name, image, badge }
-}
+// Universal click delegation for ALL action buttons
+document.addEventListener('click', (e) => {
+  const trigger = e.target.closest('.vk-order-btn, [data-vk-modal], [data-callback-modal], .cta a.button, .product-info a')
+  if (!trigger) return
 
-// Convert all product cards and actions
-document.querySelectorAll('.product-card').forEach((card) => {
-  const info = card.querySelector('.product-info')
-  if (!info) return
+  e.preventDefault()
+  e.stopPropagation()
 
-  let btn = info.querySelector('.store-add, .vk-order-btn')
-  if (!btn) {
-    btn = document.createElement('button')
-    btn.type = 'button'
-    btn.className = 'vk-order-btn'
-    btn.innerHTML = 'Заказать в VK'
-    info.append(btn)
-  } else {
-    btn.className = 'vk-order-btn'
-    btn.innerHTML = 'Обсудить в VK'
+  let name = trigger.dataset.name
+  let image = trigger.dataset.image
+  let badge = trigger.dataset.badge
+  let title = trigger.dataset.modalTitle
+
+  // Check parent card/section context
+  const card = trigger.closest('.catalog-item, .offering-card, .album-card, .product-card, .project-case, .service-card-v3, .hero-shop-product, .designer-hero, .inner-hero')
+  if (card) {
+    if (!name) name = card.dataset.name || card.querySelector('h2, h3')?.textContent.trim()
+    if (!image) image = card.dataset.image || card.querySelector('img')?.getAttribute('src')
+    if (!badge) badge = card.querySelector('.product-image span, .offering-badge, .album-card-tag, .project-case-badge, .designer-badge, small')?.textContent.trim()
   }
 
-  btn.addEventListener('click', (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    openVkModal(getCardData(card))
-  })
-})
-
-// Hero product button
-document.querySelectorAll('.hero-shop-product').forEach((hero) => {
-  let btn = hero.querySelector('.store-add, .vk-order-btn')
-  if (!btn) {
-    btn = document.createElement('button')
-    btn.type = 'button'
-    btn.className = 'vk-order-btn'
-    hero.querySelector('.hero-shop-info > div:last-child')?.append(btn)
+  // Specific overrides for callback / consultation buttons
+  if (trigger.matches('[data-callback-modal]')) {
+    name = name || 'Обратный звонок'
+    title = title || 'Заказать обратный звонок'
+    badge = badge || 'Прямая связь'
+    image = image || './images/designer-tatiana.jpg'
+  } else if (trigger.matches('.cta a.button')) {
+    name = name || 'Консультация дизайнера'
+    title = title || 'Обсудить проект с дизайнером'
+    badge = badge || 'Авторский проект'
+    image = image || './images/designer-tatiana.jpg'
   }
-  btn.className = 'vk-order-btn'
-  btn.innerHTML = 'Обсудить в VK'
-  btn.addEventListener('click', (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    openVkModal({
-      name: hero.querySelector('h2, h3')?.textContent.trim() || 'Шторы на заказ под ключ',
-      image: hero.querySelector('img')?.getAttribute('src') || './images/product-visualization.jpg',
-      badge: 'Авторский проект'
-    })
-  })
-})
 
-// Any link leading to contacts or order within product cards
-document.querySelectorAll('.product-info a, [data-vk-modal]').forEach((link) => {
-  link.addEventListener('click', (e) => {
-    const card = link.closest('.product-card')
-    const caseEl = link.closest('.project-case')
-    if (card) {
-      e.preventDefault()
-      openVkModal(getCardData(card))
-    } else if (caseEl) {
-      e.preventDefault()
-      openVkModal({
-        name: caseEl.querySelector('h2')?.textContent.trim() || 'Проект Татьяны Вересовой',
-        image: caseEl.querySelector('img')?.getAttribute('src') || './images/product-visualization.jpg',
-        badge: caseEl.querySelector('.project-case-badge')?.textContent.trim() || 'Реализованный проект'
-      })
-    }
+  openVkModal({
+    name: name || trigger.textContent.trim() || 'Обсуждение проекта',
+    image: image || './images/product-visualization.jpg',
+    badge: badge || 'Услуга студии',
+    title: title || 'Обсудить проект с дизайнером'
   })
 })
 
@@ -412,32 +382,7 @@ filterBtns.forEach((btn) => {
   })
 })
 
-// 2. Open Universal Lead Modal on Callbacks & CTA
-document.querySelectorAll('[data-callback-modal]').forEach((btn) => {
-  btn.addEventListener('click', (e) => {
-    e.preventDefault()
-    openVkModal({
-      name: 'Обратный звонок',
-      title: 'Заказать обратный звонок',
-      badge: 'Прямая связь',
-      image: './images/designer-tatiana.jpg'
-    })
-  })
-})
-
-document.querySelectorAll('.cta a.button').forEach((btn) => {
-  btn.addEventListener('click', (e) => {
-    e.preventDefault()
-    openVkModal({
-      name: 'Консультация дизайнера',
-      title: 'Обсудить проект с дизайнером',
-      badge: 'Авторский проект',
-      image: './images/designer-tatiana.jpg'
-    })
-  })
-})
-
-// Support for existing static callback forms if present
+// 2. Support for existing static callback forms if present
 document.querySelectorAll('.callback-form').forEach((form) => {
   form.addEventListener('submit', async (e) => {
     e.preventDefault()
