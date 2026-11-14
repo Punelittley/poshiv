@@ -276,6 +276,46 @@ body.vk-modal-open .vk-modal-container { transform: translateY(0) scale(1); }
 .vk-modal-btn:hover { background: #0066dc; color: #ffffff; transform: translateY(-1px); box-shadow: 0 6px 22px rgba(0, 119, 255, 0.38); }
 .vk-modal-cancel { border: 0; background: transparent; color: #7b8e8b; font-size: 11px; padding: 8px; cursor: pointer; transition: color .2s; text-align: center; }
 .vk-modal-cancel:hover { color: var(--ink); }
+
+/* Lead form inside universal modal */
+.vk-lead-form .callback-form-group { margin-bottom: 14px; }
+.vk-lead-form .callback-form-group label {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #556c68;
+  margin-bottom: 6px;
+}
+.vk-lead-form .callback-form-group input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font: inherit;
+  font-size: 14px;
+  background: var(--white);
+  box-sizing: border-box;
+}
+.vk-lead-form .callback-form-group input:focus {
+  outline: none;
+  border-color: var(--teal);
+}
+.vk-lead-form.is-sent { display: none !important; }
+.vk-lead-form.is-sent + .vk-lead-success { display: block !important; }
+.vk-modal-submit {
+  width: 100%;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
 .approach-v2 { background: var(--white); }
 .approach-v2-head { margin-bottom: 70px; display: grid; grid-template-columns: .28fr 1fr; align-items: start; }
 .approach-v2-head > span, .services-v2-intro > span, .works-preview-head > div > span, .process-v2-head > span { color: #687a77; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; }
