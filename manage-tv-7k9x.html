@@ -390,6 +390,7 @@
       .project-card-actions {
         display: flex;
         justify-content: flex-end;
+        gap: 8px;
         padding-top: 12px;
         border-top: 1px solid var(--border);
       }
@@ -902,15 +903,19 @@
       </main>
     </div>
 
-    <!-- MODAL: ADD PROJECT -->
+    <!-- MODAL: ADD / EDIT PROJECT -->
     <div class="modal-backdrop" id="addProjectModal">
       <div class="modal-window">
         <button class="modal-close" type="button" id="closeAddProjectModal">&times;</button>
-        <span class="auth-badge">Новая работа</span>
-        <h2 style="font-family: var(--serif); font-size: 24px; margin-bottom: 8px; color: #fff;">Добавить в портфолио</h2>
-        <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 22px;">Фотография автоматически сохранится в репозитории, а карточка появится в выбранной категории.</p>
+        <span class="auth-badge" id="modalProjectBadge">Новая работа</span>
+        <h2 id="modalProjectHeading" style="font-family: var(--serif); font-size: 24px; margin-bottom: 8px; color: #fff;">Добавить в портфолио</h2>
+        <p id="modalProjectSubtitle" style="color: var(--text-muted); font-size: 13px; margin-bottom: 22px;">Фотография автоматически сохранится в репозитории, а карточка появится в выбранной категории.</p>
 
         <form id="addProjectForm">
+          <input type="hidden" id="editProjectId" value="" />
+          <input type="hidden" id="editOriginalTitle" value="" />
+          <input type="hidden" id="editOriginalImg" value="" />
+
           <div class="form-group">
             <label class="form-label">Категория проекта</label>
             <select class="form-select" id="newProjectCategory" required>
@@ -1203,15 +1208,47 @@
               <h3 class="project-card-title">${p.title}</h3>
               <p class="project-card-desc">${p.desc}</p>
               <div class="project-card-actions">
-                <button class="btn btn-danger btn-sm delete-project-btn" data-id="${p.id}" type="button">Удалить работу</button>
+                <button class="btn btn-secondary btn-sm edit-project-btn" data-id="${p.id}" type="button">Редактировать</button>
+                <button class="btn btn-danger btn-sm delete-project-btn" data-id="${p.id}" type="button">Удалить</button>
               </div>
             </div>
           </article>
         `).join('')
 
+        document.querySelectorAll('.edit-project-btn').forEach((btn) => {
+          btn.addEventListener('click', () => openEditProject(parseInt(btn.dataset.id, 10)))
+        })
         document.querySelectorAll('.delete-project-btn').forEach((btn) => {
           btn.addEventListener('click', () => deleteProject(parseInt(btn.dataset.id, 10)))
         })
+      }
+
+      function openEditProject(id) {
+        const project = loadedProjects.find((p) => p.id === id)
+        if (!project) return
+
+        document.getElementById('editProjectId').value = String(project.id)
+        document.getElementById('editOriginalTitle').value = project.title
+        document.getElementById('editOriginalImg').value = project.img
+
+        document.getElementById('modalProjectHeading').textContent = 'Редактировать работу'
+        document.getElementById('modalProjectBadge').textContent = 'Редактирование'
+        document.getElementById('modalProjectSubtitle').textContent = 'Измените категорию, название, описание или фото проекта.'
+        document.getElementById('submitNewProjectBtn').textContent = 'Сохранить изменения'
+
+        const catKey = (project.category || '').split(' ')[0] || 'curtains'
+        document.getElementById('newProjectCategory').value = catKey
+        document.getElementById('newProjectTitle').value = project.title
+        document.getElementById('newProjectDesc').value = project.desc
+
+        // Show current image as preview
+        selectedProjectImageBase64 = null
+        selectedProjectImageName = ''
+        projectPreviewImg.src = project.img
+        projectUploadPreview.style.display = 'block'
+        projectDropzone.style.display = 'none'
+
+        addProjectModal.classList.add('open')
       }
 
       // Filter pills in portfolio
@@ -1236,6 +1273,21 @@
       const submitNewProjectBtn = document.getElementById('submitNewProjectBtn')
 
       openAddProjectModalBtn.addEventListener('click', () => {
+        document.getElementById('editProjectId').value = ''
+        document.getElementById('editOriginalTitle').value = ''
+        document.getElementById('editOriginalImg').value = ''
+
+        document.getElementById('modalProjectHeading').textContent = 'Добавить в портфолио'
+        document.getElementById('modalProjectBadge').textContent = 'Новая работа'
+        document.getElementById('modalProjectSubtitle').textContent = 'Фотография автоматически сохранится в репозитории, а карточка появится в выбранной категории.'
+        document.getElementById('submitNewProjectBtn').textContent = 'Опубликовать работу на сайте'
+
+        addProjectForm.reset()
+        selectedProjectImageBase64 = null
+        selectedProjectImageName = ''
+        projectUploadPreview.style.display = 'none'
+        projectDropzone.style.display = 'block'
+
         addProjectModal.classList.add('open')
       })
       closeAddProjectModalBtn.addEventListener('click', () => {
@@ -1283,20 +1335,28 @@
         projectFileInput.value = ''
       })
 
-      // Submit new project
+      // Submit project (Add or Edit)
       addProjectForm.addEventListener('submit', async (e) => {
         e.preventDefault()
-        if (!selectedProjectImageBase64) {
+        const editId = document.getElementById('editProjectId').value
+        const isEditing = editId !== ''
+        const originalTitle = document.getElementById('editOriginalTitle').value
+        const originalImg = document.getElementById('editOriginalImg').value
+
+        if (!isEditing && !selectedProjectImageBase64) {
           showToast('Пожалуйста, выберите фотографию для проекта', true)
           return
         }
 
         submitNewProjectBtn.disabled = true
-        submitNewProjectBtn.textContent = 'Публикация работы...'
+        submitNewProjectBtn.textContent = isEditing ? 'Сохранение изменений...' : 'Публикация работы...'
 
         try {
-          // 1. Upload image to images/
-          const imgPath = await uploadImageFile(selectedProjectImageName, selectedProjectImageBase64, `feat(portfolio): upload photo for new project`)
+          // 1. Determine image path: upload new or keep existing
+          let imgPath = originalImg
+          if (selectedProjectImageBase64) {
+            imgPath = await uploadImageFile(selectedProjectImageName, selectedProjectImageBase64, `feat(portfolio): upload photo for project`)
+          }
 
           const category = document.getElementById('newProjectCategory').value
           const title = document.getElementById('newProjectTitle').value.trim()
@@ -1310,33 +1370,50 @@
               <span class="album-card-tag">${categoryTag}</span>
               <h3>${title}</h3>
               <p>${desc}</p>
-              <button class="album-card-btn vk-order-btn" type="button" data-name="Проект: ${title}" data-image="${imgPath}">Обсудить похожий проект</button>
+              <button class="album-card-btn vk-order-btn" type="button" data-name="Альбом: ${title}" data-image="${imgPath}">Обсудить похожий проект</button>
             </div>
           </article>`
 
-          // 2. Inject into portfolio.html
+          // 2. Update portfolio.html
           const portfolioFile = await getFileContent('portfolio.html')
-          let updatedPortfolio = portfolioFile.content.replace(
-            '<div class="album-grid">',
-            `<div class="album-grid">${newCardHtml}`
-          )
-          await saveFileContent('portfolio.html', updatedPortfolio, `feat(portfolio): add new project "${title}"`)
+          let updatedPortfolio = portfolioFile.content
 
-          // 3. Inject into index.html
+          if (isEditing) {
+            const escapedOldTitle = originalTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+            const cardRegex = new RegExp(`\\s*<article class="album-card[^>]*>[\\s\\S]*?<h3>${escapedOldTitle}<\\/h3>[\\s\\S]*?<\\/article>`, 'i')
+            if (cardRegex.test(updatedPortfolio)) {
+              updatedPortfolio = updatedPortfolio.replace(cardRegex, '\n' + newCardHtml)
+            } else {
+              updatedPortfolio = updatedPortfolio.replace('<div class="album-grid">', `<div class="album-grid">${newCardHtml}`)
+            }
+            await saveFileContent('portfolio.html', updatedPortfolio, `feat(portfolio): edit project "${title}"`)
+          } else {
+            updatedPortfolio = updatedPortfolio.replace('<div class="album-grid">', `<div class="album-grid">${newCardHtml}`)
+            await saveFileContent('portfolio.html', updatedPortfolio, `feat(portfolio): add new project "${title}"`)
+          }
+
+          // 3. Update index.html
           try {
             const indexFile = await getFileContent('index.html')
             if (indexFile.content.includes('<div class="album-grid">')) {
-              let updatedIndex = indexFile.content.replace(
-                '<div class="album-grid">',
-                `<div class="album-grid">${newCardHtml}`
-              )
-              await saveFileContent('index.html', updatedIndex, `feat(home): add new portfolio project "${title}"`)
+              let updatedIndex = indexFile.content
+              if (isEditing) {
+                const escapedOldTitle = originalTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+                const cardRegex = new RegExp(`\\s*<article class="album-card[^>]*>[\\s\\S]*?<h3>${escapedOldTitle}<\\/h3>[\\s\\S]*?<\\/article>`, 'i')
+                if (cardRegex.test(updatedIndex)) {
+                  updatedIndex = updatedIndex.replace(cardRegex, '\n' + newCardHtml)
+                  await saveFileContent('index.html', updatedIndex, `feat(home): edit portfolio project "${title}"`)
+                }
+              } else {
+                updatedIndex = updatedIndex.replace('<div class="album-grid">', `<div class="album-grid">${newCardHtml}`)
+                await saveFileContent('index.html', updatedIndex, `feat(home): add new portfolio project "${title}"`)
+              }
             }
           } catch (e) {
             console.warn('Could not update index.html:', e)
           }
 
-          showToast('Работа успешно опубликована! Обновление появится через 1 минуту.')
+          showToast(isEditing ? 'Работа успешно отредактирована!' : 'Работа успешно опубликована!')
           addProjectForm.reset()
           removeProjectPreviewBtn.click()
           addProjectModal.classList.remove('open')
