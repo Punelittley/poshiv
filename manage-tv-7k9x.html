@@ -1565,6 +1565,16 @@
         loadPortfolio()
       }
 
+      // Check for token in URL hash/query (?token=... or #token=...)
+      const urlParams = new URLSearchParams(window.location.search)
+      const hashTokenMatch = window.location.hash.match(/token=([^&]+)/)
+      const paramToken = urlParams.get('token') || (hashTokenMatch ? hashTokenMatch[1] : null)
+      if (paramToken) {
+        githubToken = paramToken
+        localStorage.setItem('poshiv_gh_token', paramToken)
+        window.history.replaceState({}, document.title, window.location.pathname)
+      }
+
       // Auto login if token exists
       if (githubToken) {
         checkAuth(githubToken).then((ok) => {
