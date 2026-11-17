@@ -1081,8 +1081,11 @@
         const path = `images/${cleanName}`
         let sha = undefined
         try {
-          const existing = await ghRequest(`contents/${path}?ref=${REPO_BRANCH}`)
-          sha = existing.sha
+          const files = await ghRequest(`contents/images?ref=${REPO_BRANCH}`)
+          if (Array.isArray(files)) {
+            const found = files.find((f) => f.name.toLowerCase() === cleanName)
+            if (found) sha = found.sha
+          }
         } catch (e) {}
 
         const body = {
