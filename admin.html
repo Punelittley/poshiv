@@ -1,0 +1,1580 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Панель управления — Пошив штор Татьяна Вересова</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Prata&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #0f1918;
+        --sidebar-bg: #142221;
+        --card-bg: #1a2c2a;
+        --card-hover: #213836;
+        --border: #26423f;
+        --teal: #0fa49c;
+        --teal-hover: #13c2b8;
+        --teal-light: rgba(15, 164, 156, 0.15);
+        --text: #e6f0ee;
+        --text-muted: #8ba39f;
+        --wine: #a0404c;
+        --danger: #e05260;
+        --danger-light: rgba(224, 82, 96, 0.15);
+        --success: #34d399;
+        --serif: 'Prata', Georgia, serif;
+        --sans: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+        --mono: 'JetBrains Mono', monospace;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: var(--sans);
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        line-height: 1.5;
+      }
+
+      /* Login Screen */
+      .auth-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: radial-gradient(circle at 50% 20%, #173330 0%, #0a1413 70%);
+      }
+      .auth-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        width: 100%;
+        max-width: 480px;
+        padding: 40px 36px;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+      }
+      .auth-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 12px;
+        background: var(--teal-light);
+        color: var(--teal);
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin-bottom: 20px;
+      }
+      .auth-title {
+        font-family: var(--serif);
+        font-size: 28px;
+        margin-bottom: 10px;
+        color: #fff;
+      }
+      .auth-subtitle {
+        color: var(--text-muted);
+        font-size: 13.5px;
+        margin-bottom: 28px;
+      }
+      .form-group {
+        margin-bottom: 20px;
+      }
+      .form-label {
+        display: block;
+        font-size: 11.5px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+      }
+      .form-input, .form-select, .form-textarea {
+        width: 100%;
+        padding: 13px 16px;
+        background: #111e1d;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        color: #fff;
+        font: inherit;
+        font-size: 14px;
+        transition: border-color .2s, box-shadow .2s;
+      }
+      .form-input:focus, .form-select:focus, .form-textarea:focus {
+        outline: none;
+        border-color: var(--teal);
+        box-shadow: 0 0 0 3px rgba(15, 164, 156, 0.2);
+      }
+      .form-textarea {
+        min-height: 90px;
+        resize: vertical;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 13px 24px;
+        border-radius: 4px;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        cursor: pointer;
+        border: none;
+        transition: background .2s, transform .15s, opacity .2s;
+        text-decoration: none;
+      }
+      .btn-primary {
+        background: var(--teal);
+        color: #fff;
+        width: 100%;
+      }
+      .btn-primary:hover:not(:disabled) {
+        background: var(--teal-hover);
+        transform: translateY(-1px);
+      }
+      .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .btn-secondary {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+      .btn-secondary:hover {
+        background: var(--card-hover);
+        border-color: var(--teal);
+      }
+      .btn-danger {
+        background: var(--danger-light);
+        color: var(--danger);
+        border: 1px solid rgba(224, 82, 96, 0.3);
+      }
+      .btn-danger:hover {
+        background: var(--danger);
+        color: #fff;
+      }
+      .btn-sm {
+        padding: 8px 14px;
+        font-size: 11.5px;
+      }
+      .auth-hint {
+        margin-top: 24px;
+        padding: 16px;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+        border-left: 3px solid var(--teal);
+        font-size: 12.5px;
+        color: var(--text-muted);
+      }
+      .auth-hint a {
+        color: var(--teal);
+        text-decoration: underline;
+      }
+
+      /* Admin Layout */
+      .app-layout {
+        display: none;
+        min-height: 100vh;
+        flex-direction: column;
+      }
+      .app-header {
+        background: var(--sidebar-bg);
+        border-bottom: 1px solid var(--border);
+        padding: 14px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .brand-title {
+        font-family: var(--serif);
+        font-size: 19px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .brand-title span {
+        font-family: var(--sans);
+        font-size: 10px;
+        color: var(--teal);
+        text-transform: uppercase;
+        letter-spacing: .12em;
+        padding: 3px 8px;
+        background: var(--teal-light);
+        border-radius: 3px;
+      }
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .repo-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--text-muted);
+        padding: 6px 12px;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 999px;
+      }
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--success);
+        box-shadow: 0 0 8px var(--success);
+      }
+
+      /* Navigation Tabs */
+      .app-nav {
+        background: var(--sidebar-bg);
+        border-bottom: 1px solid var(--border);
+        padding: 0 28px;
+        display: flex;
+        gap: 4px;
+        overflow-x: auto;
+      }
+      .nav-tab {
+        padding: 14px 18px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-muted);
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: color .2s, border-color .2s;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .nav-tab:hover {
+        color: #fff;
+      }
+      .nav-tab.active {
+        color: var(--teal);
+        border-bottom-color: var(--teal);
+      }
+
+      /* Content Area */
+      .app-main {
+        flex: 1;
+        padding: 32px 28px 60px;
+        max-width: 1400px;
+        width: 100%;
+        margin: 0 auto;
+      }
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+
+      .panel-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      .panel-head h2 {
+        font-family: var(--serif);
+        font-size: 26px;
+        color: #fff;
+      }
+      .panel-head p {
+        color: var(--text-muted);
+        font-size: 13px;
+        margin-top: 4px;
+      }
+
+      /* Category Filter Pills */
+      .filter-pills {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+      }
+      .filter-pill {
+        padding: 7px 14px;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        color: var(--text-muted);
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all .2s;
+      }
+      .filter-pill:hover {
+        color: #fff;
+        border-color: var(--teal);
+      }
+      .filter-pill.active {
+        background: var(--teal);
+        color: #fff;
+        border-color: var(--teal);
+      }
+
+      /* Portfolio Grid */
+      .portfolio-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 22px;
+      }
+      .project-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform .2s, border-color .2s;
+      }
+      .project-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--teal);
+      }
+      .project-card-img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background: #000;
+      }
+      .project-card-body {
+        padding: 18px 20px 20px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+      .project-card-tag {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: var(--teal);
+        margin-bottom: 6px;
+      }
+      .project-card-title {
+        font-family: var(--serif);
+        font-size: 18px;
+        margin-bottom: 8px;
+        color: #fff;
+        line-height: 1.3;
+      }
+      .project-card-desc {
+        color: var(--text-muted);
+        font-size: 12.5px;
+        line-height: 1.5;
+        margin-bottom: 16px;
+        flex: 1;
+      }
+      .project-card-actions {
+        display: flex;
+        justify-content: flex-end;
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+      }
+
+      /* Modal Dialog */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(10, 20, 19, 0.8);
+        backdrop-filter: blur(6px);
+        z-index: 200;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .modal-backdrop.open {
+        display: flex;
+      }
+      .modal-window {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        width: 100%;
+        max-width: 580px;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 32px 30px;
+        position: relative;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+      }
+      .modal-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-size: 26px;
+        cursor: pointer;
+        line-height: 1;
+        transition: color .2s;
+      }
+      .modal-close:hover {
+        color: #fff;
+      }
+
+      /* Image Upload Dropzone */
+      .dropzone {
+        border: 2px dashed var(--border);
+        border-radius: 6px;
+        padding: 24px;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.15);
+        cursor: pointer;
+        transition: border-color .2s, background .2s;
+        margin-bottom: 16px;
+      }
+      .dropzone:hover, .dropzone.dragover {
+        border-color: var(--teal);
+        background: var(--teal-light);
+      }
+      .dropzone-icon {
+        font-size: 32px;
+        margin-bottom: 8px;
+      }
+      .dropzone-text {
+        font-size: 13px;
+        color: var(--text);
+        margin-bottom: 4px;
+      }
+      .dropzone-subtext {
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+      .upload-preview {
+        display: none;
+        position: relative;
+        margin-bottom: 16px;
+        border-radius: 4px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+      .upload-preview img {
+        width: 100%;
+        max-height: 220px;
+        object-fit: cover;
+        display: block;
+      }
+      .upload-preview-remove {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        border: none;
+        padding: 6px 10px;
+        border-radius: 4px;
+        font-size: 11px;
+        cursor: pointer;
+      }
+
+      /* Media Gallery Grid */
+      .media-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+      }
+      .media-item {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        overflow: hidden;
+        position: relative;
+        transition: border-color .2s;
+      }
+      .media-item:hover {
+        border-color: var(--teal);
+      }
+      .media-thumb {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        display: block;
+        background: #000;
+      }
+      .media-meta {
+        padding: 10px 12px;
+      }
+      .media-name {
+        font-size: 11.5px;
+        font-family: var(--mono);
+        color: #fff;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 6px;
+      }
+      .media-actions {
+        display: flex;
+        gap: 6px;
+      }
+
+      /* Quick Text Edit Cards */
+      .text-edit-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+        gap: 22px;
+      }
+      .text-edit-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 24px;
+      }
+      .text-edit-card h3 {
+        font-family: var(--serif);
+        font-size: 19px;
+        color: #fff;
+        margin-bottom: 6px;
+      }
+      .text-edit-card p {
+        font-size: 12.5px;
+        color: var(--text-muted);
+        margin-bottom: 18px;
+      }
+
+      /* Code / File Editor */
+      .code-editor {
+        width: 100%;
+        min-height: 480px;
+        background: #0b1413;
+        color: #a4e5d9;
+        font-family: var(--mono);
+        font-size: 13px;
+        line-height: 1.6;
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        resize: vertical;
+      }
+
+      /* Toast Notification */
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        padding: 14px 22px;
+        background: var(--card-bg);
+        border: 1px solid var(--teal);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        border-radius: 6px;
+        color: #fff;
+        font-size: 13.5px;
+        font-weight: 500;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transform: translateY(100px);
+        opacity: 0;
+        transition: transform .3s cubic-bezier(0.16, 1, 0.3, 1), opacity .3s;
+      }
+      .toast.visible {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      .toast.error {
+        border-color: var(--danger);
+      }
+      .toast-icon {
+        font-size: 18px;
+      }
+
+      /* Guide Card */
+      .guide-box {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 28px;
+        margin-bottom: 20px;
+      }
+      .guide-box h3 {
+        font-family: var(--serif);
+        font-size: 20px;
+        color: #fff;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .guide-box ol {
+        margin-left: 20px;
+        color: var(--text-muted);
+        font-size: 14px;
+        line-height: 1.8;
+      }
+      .guide-box li {
+        margin-bottom: 8px;
+      }
+      .guide-box strong {
+        color: #fff;
+      }
+      .guide-box a {
+        color: var(--teal);
+        text-decoration: underline;
+      }
+
+      @media (max-width: 768px) {
+        .app-header { padding: 12px 16px; flex-direction: column; align-items: flex-start; }
+        .app-nav { padding: 0 16px; }
+        .app-main { padding: 20px 16px 40px; }
+        .text-edit-grid { grid-template-columns: 1fr; }
+        .auth-card { padding: 28px 20px; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- 1. AUTH SCREEN -->
+    <div class="auth-wrapper" id="authScreen">
+      <div class="auth-card">
+        <span class="auth-badge">Управление сайтом</span>
+        <h1 class="auth-title">Татьяна Вересова</h1>
+        <p class="auth-subtitle">Вход в панель управления сайтом пошива штор (синхронизация с GitHub API).</p>
+        
+        <form id="loginForm">
+          <div class="form-group">
+            <label class="form-label" for="ghToken">GitHub Personal Access Token</label>
+            <input class="form-input" type="password" id="ghToken" placeholder="ghp_... или github_pat_..." required autocomplete="current-password" />
+          </div>
+          <button class="btn btn-primary" type="submit" id="loginBtn">
+            <span>Войти в админ-панель</span>
+          </button>
+        </form>
+
+        <div class="auth-hint">
+          <strong>Где взять токен?</strong><br />
+          1. Перейдите на GitHub в раздел <a href="https://github.com/settings/tokens" target="_blank" rel="noopener noreferrer">Personal Access Tokens</a>.<br />
+          2. Нажмите <em>Generate new token (classic)</em>.<br />
+          3. Поставьте галочку <strong>repo</strong> (или <strong>public_repo</strong>) и нажмите <em>Generate</em>.<br />
+          4. Скопируйте полученный ключ и вставьте сюда. Токен сохранится только в вашем браузере!
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. MAIN APP LAYOUT -->
+    <div class="app-layout" id="appLayout">
+      <header class="app-header">
+        <div class="brand-title">
+          Татьяна Вересова
+          <span>Панель управления</span>
+        </div>
+        <div class="header-actions">
+          <div class="repo-status">
+            <div class="status-dot"></div>
+            <span>Punelittley/poshiv (main)</span>
+          </div>
+          <a class="btn btn-secondary btn-sm" href="./index.html" target="_blank">
+            Смотреть сайт ↗
+          </a>
+          <button class="btn btn-secondary btn-sm" id="logoutBtn" type="button">
+            Выйти
+          </button>
+        </div>
+      </header>
+
+      <!-- Navigation Tabs -->
+      <nav class="app-nav">
+        <button class="nav-tab active" data-tab="portfolioTab" type="button">
+          🎨 Портфолио и работы
+        </button>
+        <button class="nav-tab" data-tab="mediaTab" type="button">
+          🖼️ Медиагалерея (Фото)
+        </button>
+        <button class="nav-tab" data-tab="textsTab" type="button">
+          ✏️ Быстрое редактирование текстов
+        </button>
+        <button class="nav-tab" data-tab="editorTab" type="button">
+          📄 Редактор страниц
+        </button>
+        <button class="nav-tab" data-tab="guideTab" type="button">
+          ℹ️ Инструкция
+        </button>
+      </nav>
+
+      <!-- Main Content Area -->
+      <main class="app-main">
+
+        <!-- TAB 1: PORTFOLIO -->
+        <section class="tab-panel active" id="portfolioTab">
+          <div class="panel-head">
+            <div>
+              <h2>Управление портфолио</h2>
+              <p>Добавляйте новые фотографии выполненных проектов, выбирайте категории и редактируйте описание.</p>
+            </div>
+            <button class="btn btn-primary" id="openAddProjectModal" type="button" style="width: auto;">
+              + Добавить новую работу
+            </button>
+          </div>
+
+          <!-- Category filter pills -->
+          <div class="filter-pills" id="portfolioFilterPills">
+            <button class="filter-pill active" data-filter="all" type="button">Все работы</button>
+            <button class="filter-pill" data-filter="curtains" type="button">Шторы</button>
+            <button class="filter-pill" data-filter="bedspreads" type="button">Покрывала и подушки</button>
+            <button class="filter-pill" data-filter="roman" type="button">Римские шторы</button>
+            <button class="filter-pill" data-filter="custom-windows" type="button">Нестандартные окна</button>
+            <button class="filter-pill" data-filter="outdoor" type="button">Уличное оформление</button>
+            <button class="filter-pill" data-filter="corporate" type="button">Юр. объекты</button>
+            <button class="filter-pill" data-filter="sunscreen" type="button">Солнцезащита</button>
+            <button class="filter-pill" data-filter="installation" type="button">Монтаж</button>
+            <button class="filter-pill" data-filter="steaming" type="button">Навеска и отпаривание</button>
+          </div>
+
+          <!-- Portfolio cards grid -->
+          <div class="portfolio-grid" id="portfolioCardsList">
+            <div style="color: var(--text-muted); padding: 40px 0; text-align: center; grid-column: 1 / -1;">
+              Загрузка проектов из репозитория...
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 2: MEDIA GALLERY -->
+        <section class="tab-panel" id="mediaTab">
+          <div class="panel-head">
+            <div>
+              <h2>Медиатека фотографий</h2>
+              <p>Все фотографии, хранящиеся в папке <code>images/</code> репозитория. Загружайте новые снимки в один клик.</p>
+            </div>
+          </div>
+
+          <!-- Quick Dropzone Upload -->
+          <div class="dropzone" id="quickMediaDropzone">
+            <div class="dropzone-icon">📷</div>
+            <div class="dropzone-text">Перетащите сюда фото или нажмите для выбора</div>
+            <div class="dropzone-subtext">JPG, PNG, WEBP до 10 МБ. Файл сразу загрузится в images/</div>
+            <input type="file" id="quickMediaFileInput" accept="image/*" style="display: none;" />
+          </div>
+
+          <div class="media-grid" id="mediaGridList">
+            <div style="color: var(--text-muted); padding: 30px 0; text-align: center; grid-column: 1 / -1;">
+              Загрузка списка фото...
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 3: QUICK TEXTS -->
+        <section class="tab-panel" id="textsTab">
+          <div class="panel-head">
+            <div>
+              <h2>Быстрое редактирование текстов</h2>
+              <p>Меняйте контактные данные, цифры и ключевые тексты сразу на всех страницах сайта.</p>
+            </div>
+            <button class="btn btn-primary" id="saveQuickTextsBtn" type="button" style="width: auto;">
+              Сохранить тексты на сайт
+            </button>
+          </div>
+
+          <form id="quickTextsForm" class="text-edit-grid">
+            <div class="text-edit-card">
+              <h3>Контакты и связь</h3>
+              <p>Телефон и ссылка на диалог ВКонтакте</p>
+              
+              <div class="form-group">
+                <label class="form-label">Номер телефона</label>
+                <input class="form-input" type="text" id="qtPhone" value="+7 (981) 421-85-37" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Ссылка ВКонтакте</label>
+                <input class="form-input" type="text" id="qtVkLink" value="https://vk.ru/shtorymoscovact" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Часы работы</label>
+                <input class="form-input" type="text" id="qtHours" value="Пн—Вс 10:00—19:00 · Без выходных" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">География выездов</label>
+                <input class="form-input" type="text" id="qtGeo" value="Москва и Московская область" />
+              </div>
+            </div>
+
+            <div class="text-edit-card">
+              <h3>Ключевые цифры и факты</h3>
+              <p>Блоки преимуществ на главной странице</p>
+              
+              <div class="form-group">
+                <label class="form-label">Опыт работы</label>
+                <input class="form-input" type="text" id="qtExp" value="16 лет" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Количество проектов</label>
+                <input class="form-input" type="text" id="qtProjects" value="Сотни" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Количество образцов тканей</label>
+                <input class="form-input" type="text" id="qtFabrics" value="15 000+" />
+              </div>
+            </div>
+
+            <div class="text-edit-card" style="grid-column: 1 / -1;">
+              <h3>Главный блок о мастере</h3>
+              <p>Приветственный текст на главной странице (первый экран)</p>
+              <div class="form-group">
+                <label class="form-label">Текст приветствия Татьяны</label>
+                <textarea class="form-textarea" id="qtAboutText" style="min-height: 120px;">Здравствуйте! Меня зовут Татьяна Вересова. Уже более 16 лет я создаю индивидуальные текстильные решения для квартир и загородных домов в Москве и Подмосковье. Лично веду каждый проект от первой встречи и снятия замеров до идеальной развески и отпаривания у вас дома.</textarea>
+              </div>
+            </div>
+          </form>
+        </section>
+
+        <!-- TAB 4: PAGE FILE EDITOR -->
+        <section class="tab-panel" id="editorTab">
+          <div class="panel-head">
+            <div>
+              <h2>Прямой редактор страниц</h2>
+              <p>Выберите любой файл для точного редактирования HTML-кода и стилей.</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <select class="form-select" id="pageFileSelect" style="width: 220px;">
+                <option value="index.html">Главная (index.html)</option>
+                <option value="services.html">Услуги (services.html)</option>
+                <option value="portfolio.html">Портфолио (portfolio.html)</option>
+                <option value="about.html">О нас (about.html)</option>
+                <option value="contacts.html">Контакты (contacts.html)</option>
+                <option value="reviews.html">Отзывы (reviews.html)</option>
+                <option value="catalog.html">Каталог (catalog.html)</option>
+                <option value="privacy.html">Политика (privacy.html)</option>
+                <option value="styles.css">Стили (styles.css)</option>
+              </select>
+              <button class="btn btn-primary" id="savePageFileBtn" type="button" style="width: auto;">
+                Опубликовать файл
+              </button>
+            </div>
+          </div>
+
+          <textarea class="code-editor" id="pageCodeEditor" spellcheck="false" placeholder="Загрузка содержимого файла..."></textarea>
+        </section>
+
+        <!-- TAB 5: GUIDE -->
+        <section class="tab-panel" id="guideTab">
+          <div class="guide-box">
+            <h3>📷 Как добавить новую работу в портфолио?</h3>
+            <ol>
+              <li>Откройте вкладку <strong>«Портфолио и работы»</strong>.</li>
+              <li>Нажмите кнопку <strong>«+ Добавить новую работу»</strong>.</li>
+              <li>Выберите категорию (например, <em>«Шторы»</em> или <em>«Римские шторы»</em>).</li>
+              <li>Введите заголовок и краткое описание (например, адрес ЖК или стиль интерьера).</li>
+              <li>Перетащите фото с телефона или компьютера и нажмите <strong>«Опубликовать работу»</strong>.</li>
+              <li>Скрипт автоматически загрузит фото в репозиторий и создаст карточку на страницах <code>portfolio.html</code> и <code>index.html</code>.</li>
+              <li>Через 30–60 секунд GitHub Pages автоматически пересоберёт сайт, и новая работа появится онлайн!</li>
+            </ol>
+          </div>
+
+          <div class="guide-box">
+            <h3>🔑 Как устроен доступ и безопасность?</h3>
+            <ol>
+              <li>Панель управления работает напрямую с официальным <strong>GitHub REST API</strong>.</li>
+              <li>Ваш токен сохраняется только в локальной памяти вашего браузера (<code>localStorage</code>) и не передается ни на какие сторонние серверы.</li>
+              <li>Любое действие (добавление фото, удаление проекта, смена телефона) создает настоящий Git-коммит в ветку <code>main</code> от вашего имени.</li>
+            </ol>
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+    <!-- MODAL: ADD PROJECT -->
+    <div class="modal-backdrop" id="addProjectModal">
+      <div class="modal-window">
+        <button class="modal-close" type="button" id="closeAddProjectModal">&times;</button>
+        <span class="auth-badge">Новая работа</span>
+        <h2 style="font-family: var(--serif); font-size: 24px; margin-bottom: 8px; color: #fff;">Добавить в портфолио</h2>
+        <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 22px;">Фотография автоматически сохранится в репозитории, а карточка появится в выбранной категории.</p>
+
+        <form id="addProjectForm">
+          <div class="form-group">
+            <label class="form-label">Категория проекта</label>
+            <select class="form-select" id="newProjectCategory" required>
+              <option value="curtains">Шторы (портьеры, тюль)</option>
+              <option value="bedspreads">Покрывала и подушечки</option>
+              <option value="roman">Римские шторы</option>
+              <option value="custom-windows">Нестандартные окна</option>
+              <option value="outdoor">Уличное оформление</option>
+              <option value="corporate">Текстильное оформление юр. объектов</option>
+              <option value="sunscreen">Солнцезащитные системы</option>
+              <option value="installation">Монтаж</option>
+              <option value="steaming">Навеска и отпаривание штор</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Название проекта</label>
+            <input class="form-input" type="text" id="newProjectTitle" placeholder="Например: Шторы блэкаут в спальню ЖК Символ" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Краткое описание</label>
+            <textarea class="form-textarea" id="newProjectDesc" placeholder="Например: Двухслойные портьеры с кантом, бесшумный профильный карниз, 100% затемнение" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Фотография работы</label>
+            <div class="dropzone" id="projectDropzone">
+              <div class="dropzone-icon">📷</div>
+              <div class="dropzone-text">Перетащите сюда фото или нажмите для выбора</div>
+              <div class="dropzone-subtext">JPG, PNG или WEBP</div>
+              <input type="file" id="projectFileInput" accept="image/*" style="display: none;" />
+            </div>
+
+            <div class="upload-preview" id="projectUploadPreview">
+              <img id="projectPreviewImg" src="" alt="Предпросмотр" />
+              <button class="upload-preview-remove" type="button" id="removeProjectPreview">Заменить фото</button>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" type="submit" id="submitNewProjectBtn">
+            Опубликовать работу на сайте
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div class="toast" id="toastNotice">
+      <span class="toast-icon">✓</span>
+      <span class="toast-text" id="toastMessage">Уведомление</span>
+    </div>
+
+    <script type="module">
+      const REPO_OWNER = 'Punelittley'
+      const REPO_NAME = 'poshiv'
+      const REPO_BRANCH = 'main'
+
+      const CATEGORY_NAMES = {
+        'curtains': 'Шторы',
+        'bedspreads': 'Покрывала и подушечки',
+        'roman': 'Римские шторы',
+        'custom-windows': 'Нестандартные окна',
+        'outdoor': 'Уличное оформление',
+        'corporate': 'Юр. объекты',
+        'sunscreen': 'Солнцезащитные системы',
+        'installation': 'Монтаж',
+        'steaming': 'Навеска и отпаривание'
+      }
+
+      let githubToken = localStorage.getItem('poshiv_gh_token') || ''
+      let currentFileSha = {}
+      let selectedProjectImageBase64 = null
+      let selectedProjectImageName = ''
+
+      // DOM Elements
+      const authScreen = document.getElementById('authScreen')
+      const appLayout = document.getElementById('appLayout')
+      const loginForm = document.getElementById('loginForm')
+      const ghTokenInput = document.getElementById('ghToken')
+      const loginBtn = document.getElementById('loginBtn')
+      const logoutBtn = document.getElementById('logoutBtn')
+      const toastNotice = document.getElementById('toastNotice')
+      const toastMessage = document.getElementById('toastMessage')
+
+      // UTF-8 Base64 Helpers
+      function utf8ToBase64(str) {
+        const bytes = new TextEncoder().encode(str)
+        let binary = ''
+        for (let i = 0; i < bytes.byteLength; i++) {
+          binary += String.fromCharCode(bytes[i])
+        }
+        return window.btoa(binary)
+      }
+
+      function base64ToUtf8(str) {
+        const binary = window.atob(str.replace(/\s/g, ''))
+        const bytes = new Uint8Array(binary.length)
+        for (let i = 0; i < binary.length; i++) {
+          bytes[i] = binary.charCodeAt(i)
+        }
+        return new TextDecoder().decode(bytes)
+      }
+
+      function showToast(text, isError = false) {
+        toastMessage.textContent = text
+        toastNotice.classList.toggle('error', isError)
+        toastNotice.querySelector('.toast-icon').textContent = isError ? '✕' : '✓'
+        toastNotice.classList.add('visible')
+        setTimeout(() => toastNotice.classList.remove('visible'), 4000)
+      }
+
+      // GitHub API Client
+      async function ghRequest(endpoint, options = {}) {
+        const url = endpoint.startsWith('https://') ? endpoint : `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/${endpoint}`
+        const headers = {
+          'Authorization': `Bearer ${githubToken}`,
+          'Accept': 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+          ...(options.headers || {})
+        }
+        const res = await fetch(url, { ...options, headers })
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}))
+          throw new Error(errData.message || `Ошибка GitHub API: ${res.status} ${res.statusText}`)
+        }
+        return res.json()
+      }
+
+      async function getFileContent(path) {
+        const data = await ghRequest(`contents/${path}?ref=${REPO_BRANCH}`)
+        currentFileSha[path] = data.sha
+        return {
+          sha: data.sha,
+          content: base64ToUtf8(data.content)
+        }
+      }
+
+      async function saveFileContent(path, content, message) {
+        let sha = currentFileSha[path]
+        if (!sha) {
+          try {
+            const existing = await ghRequest(`contents/${path}?ref=${REPO_BRANCH}`)
+            sha = existing.sha
+          } catch (e) {}
+        }
+        const body = {
+          message: message || `update ${path}`,
+          content: utf8ToBase64(content),
+          branch: REPO_BRANCH
+        }
+        if (sha) body.sha = sha
+        const res = await ghRequest(`contents/${path}`, {
+          method: 'PUT',
+          body: JSON.stringify(body)
+        })
+        currentFileSha[path] = res.content.sha
+        return res
+      }
+
+      async function uploadImageFile(filename, base64Data, message) {
+        const cleanName = filename.toLowerCase().replace(/[^a-z0-9_.-]/g, '_')
+        const path = `images/${cleanName}`
+        let sha = undefined
+        try {
+          const existing = await ghRequest(`contents/${path}?ref=${REPO_BRANCH}`)
+          sha = existing.sha
+        } catch (e) {}
+
+        const body = {
+          message: message || `upload image ${cleanName}`,
+          content: base64Data,
+          branch: REPO_BRANCH
+        }
+        if (sha) body.sha = sha
+
+        await ghRequest(`contents/${path}`, {
+          method: 'PUT',
+          body: JSON.stringify(body)
+        })
+        return `./images/${cleanName}`
+      }
+
+      // Verify and Login
+      async function checkAuth(token) {
+        try {
+          const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Accept': 'application/vnd.github+json'
+            }
+          })
+          if (!res.ok) throw new Error('Неверный токен или нет доступа к репозиторию')
+          return true
+        } catch (err) {
+          return false
+        }
+      }
+
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        const token = ghTokenInput.value.trim()
+        if (!token) return
+
+        loginBtn.disabled = true
+        loginBtn.textContent = 'Проверка доступа...'
+
+        const isValid = await checkAuth(token)
+        if (isValid) {
+          githubToken = token
+          localStorage.setItem('poshiv_gh_token', token)
+          initApp()
+          showToast('Успешный вход в панель управления!')
+        } else {
+          showToast('Ошибка: токен недействителен или нет доступа к репозиторию', true)
+        }
+
+        loginBtn.disabled = false
+        loginBtn.textContent = 'Войти в админ-панель'
+      })
+
+      logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('poshiv_gh_token')
+        githubToken = ''
+        authScreen.style.display = 'flex'
+        appLayout.style.display = 'none'
+        showToast('Вы вышли из системы')
+      })
+
+      // Tabs Switcher
+      document.querySelectorAll('.nav-tab').forEach((tab) => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.nav-tab').forEach((t) => t.classList.remove('active'))
+          document.querySelectorAll('.tab-panel').forEach((p) => p.classList.remove('active'))
+          tab.classList.add('active')
+          const panel = document.getElementById(tab.dataset.tab)
+          panel?.classList.add('active')
+
+          if (tab.dataset.tab === 'mediaTab') loadMediaGallery()
+          if (tab.dataset.tab === 'editorTab') loadCurrentEditorFile()
+        })
+      })
+
+      // ==========================================
+      // 1. PORTFOLIO MANAGEMENT
+      // ==========================================
+      const portfolioCardsList = document.getElementById('portfolioCardsList')
+      let loadedProjects = []
+
+      async function loadPortfolio() {
+        try {
+          portfolioCardsList.innerHTML = '<div style="color: var(--text-muted); padding: 40px 0; text-align: center; grid-column: 1 / -1;">Загрузка проектов из portfolio.html...</div>'
+          const file = await getFileContent('portfolio.html')
+          const parser = new DOMParser()
+          const doc = parser.parseFromString(file.content, 'text/html')
+          const cards = doc.querySelectorAll('.portfolio-albums-section .album-card')
+          
+          loadedProjects = []
+          cards.forEach((card, idx) => {
+            const title = card.querySelector('h3')?.textContent.trim() || 'Без названия'
+            const desc = card.querySelector('p')?.textContent.trim() || ''
+            const img = card.querySelector('img')?.getAttribute('src') || ''
+            const category = card.dataset.category || 'curtains'
+            const tag = card.querySelector('.album-card-tag')?.textContent.trim() || CATEGORY_NAMES[category.split(' ')[0]] || 'Шторы'
+            loadedProjects.push({ id: idx, title, desc, img, category, tag })
+          })
+
+          renderPortfolioCards('all')
+        } catch (err) {
+          portfolioCardsList.innerHTML = `<div style="color: var(--danger); padding: 40px 0; text-align: center; grid-column: 1 / -1;">Ошибка загрузки портфолио: ${err.message}</div>`
+        }
+      }
+
+      function renderPortfolioCards(filter = 'all') {
+        const filtered = loadedProjects.filter((p) => {
+          if (filter === 'all') return true
+          return (p.category || '').split(' ').includes(filter)
+        })
+
+        if (!filtered.length) {
+          portfolioCardsList.innerHTML = '<div style="color: var(--text-muted); padding: 40px 0; text-align: center; grid-column: 1 / -1;">В этой категории пока нет проектов.</div>'
+          return
+        }
+
+        portfolioCardsList.innerHTML = filtered.map((p) => `
+          <article class="project-card" data-id="${p.id}">
+            <img class="project-card-img" src="${p.img}" alt="${p.title}" onerror="this.src='./images/product-visualization.jpg'" />
+            <div class="project-card-body">
+              <span class="project-card-tag">${p.tag}</span>
+              <h3 class="project-card-title">${p.title}</h3>
+              <p class="project-card-desc">${p.desc}</p>
+              <div class="project-card-actions">
+                <button class="btn btn-danger btn-sm delete-project-btn" data-id="${p.id}" type="button">Удалить работу</button>
+              </div>
+            </div>
+          </article>
+        `).join('')
+
+        document.querySelectorAll('.delete-project-btn').forEach((btn) => {
+          btn.addEventListener('click', () => deleteProject(parseInt(btn.dataset.id, 10)))
+        })
+      }
+
+      // Filter pills in portfolio
+      document.querySelectorAll('#portfolioFilterPills .filter-pill').forEach((pill) => {
+        pill.addEventListener('click', () => {
+          document.querySelectorAll('#portfolioFilterPills .filter-pill').forEach((p) => p.classList.remove('active'))
+          pill.classList.add('active')
+          renderPortfolioCards(pill.dataset.filter)
+        })
+      })
+
+      // Add Project Modal Handling
+      const addProjectModal = document.getElementById('addProjectModal')
+      const openAddProjectModalBtn = document.getElementById('openAddProjectModal')
+      const closeAddProjectModalBtn = document.getElementById('closeAddProjectModal')
+      const projectDropzone = document.getElementById('projectDropzone')
+      const projectFileInput = document.getElementById('projectFileInput')
+      const projectUploadPreview = document.getElementById('projectUploadPreview')
+      const projectPreviewImg = document.getElementById('projectPreviewImg')
+      const removeProjectPreviewBtn = document.getElementById('removeProjectPreview')
+      const addProjectForm = document.getElementById('addProjectForm')
+      const submitNewProjectBtn = document.getElementById('submitNewProjectBtn')
+
+      openAddProjectModalBtn.addEventListener('click', () => {
+        addProjectModal.classList.add('open')
+      })
+      closeAddProjectModalBtn.addEventListener('click', () => {
+        addProjectModal.classList.remove('open')
+      })
+      addProjectModal.addEventListener('click', (e) => {
+        if (e.target === addProjectModal) addProjectModal.classList.remove('open')
+      })
+
+      // File Selection & Drag & Drop
+      projectDropzone.addEventListener('click', () => projectFileInput.click())
+      projectDropzone.addEventListener('dragover', (e) => { e.preventDefault(); projectDropzone.classList.add('dragover'); })
+      projectDropzone.addEventListener('dragleave', () => projectDropzone.classList.remove('dragover'))
+      projectDropzone.addEventListener('drop', (e) => {
+        e.preventDefault()
+        projectDropzone.classList.remove('dragover')
+        if (e.dataTransfer.files?.[0]) handleFileSelect(e.dataTransfer.files[0])
+      })
+      projectFileInput.addEventListener('change', () => {
+        if (projectFileInput.files?.[0]) handleFileSelect(projectFileInput.files[0])
+      })
+
+      function handleFileSelect(file) {
+        if (!file.type.startsWith('image/')) {
+          showToast('Выберите изображение (JPG, PNG или WEBP)', true)
+          return
+        }
+        selectedProjectImageName = `project_${Date.now()}_${file.name}`
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          const result = e.target.result
+          selectedProjectImageBase64 = result.split(',')[1]
+          projectPreviewImg.src = result
+          projectUploadPreview.style.display = 'block'
+          projectDropzone.style.display = 'none'
+        }
+        reader.readAsDataURL(file)
+      }
+
+      removeProjectPreviewBtn.addEventListener('click', () => {
+        selectedProjectImageBase64 = null
+        selectedProjectImageName = ''
+        projectUploadPreview.style.display = 'none'
+        projectDropzone.style.display = 'block'
+        projectFileInput.value = ''
+      })
+
+      // Submit new project
+      addProjectForm.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        if (!selectedProjectImageBase64) {
+          showToast('Пожалуйста, выберите фотографию для проекта', true)
+          return
+        }
+
+        submitNewProjectBtn.disabled = true
+        submitNewProjectBtn.textContent = 'Публикация работы...'
+
+        try {
+          // 1. Upload image to images/
+          const imgPath = await uploadImageFile(selectedProjectImageName, selectedProjectImageBase64, `feat(portfolio): upload photo for new project`)
+
+          const category = document.getElementById('newProjectCategory').value
+          const title = document.getElementById('newProjectTitle').value.trim()
+          const desc = document.getElementById('newProjectDesc').value.trim()
+          const categoryTag = CATEGORY_NAMES[category] || 'Шторы'
+
+          const newCardHtml = `
+          <article class="album-card reveal" data-category="${category}">
+            <img class="album-card-img" src="${imgPath}" alt="${title}" />
+            <div class="album-card-body">
+              <span class="album-card-tag">${categoryTag}</span>
+              <h3>${title}</h3>
+              <p>${desc}</p>
+              <button class="album-card-btn vk-order-btn" type="button" data-name="Проект: ${title}" data-image="${imgPath}">Обсудить похожий проект</button>
+            </div>
+          </article>`
+
+          // 2. Inject into portfolio.html
+          const portfolioFile = await getFileContent('portfolio.html')
+          let updatedPortfolio = portfolioFile.content.replace(
+            '<div class="album-grid">',
+            `<div class="album-grid">${newCardHtml}`
+          )
+          await saveFileContent('portfolio.html', updatedPortfolio, `feat(portfolio): add new project "${title}"`)
+
+          // 3. Inject into index.html
+          try {
+            const indexFile = await getFileContent('index.html')
+            if (indexFile.content.includes('<div class="album-grid">')) {
+              let updatedIndex = indexFile.content.replace(
+                '<div class="album-grid">',
+                `<div class="album-grid">${newCardHtml}`
+              )
+              await saveFileContent('index.html', updatedIndex, `feat(home): add new portfolio project "${title}"`)
+            }
+          } catch (e) {
+            console.warn('Could not update index.html:', e)
+          }
+
+          showToast('Работа успешно опубликована! Обновление появится через 1 минуту.')
+          addProjectForm.reset()
+          removeProjectPreviewBtn.click()
+          addProjectModal.classList.remove('open')
+          loadPortfolio()
+        } catch (err) {
+          showToast(`Ошибка: ${err.message}`, true)
+        }
+
+        submitNewProjectBtn.disabled = false
+        submitNewProjectBtn.textContent = 'Опубликовать работу на сайте'
+      })
+
+      // Delete project
+      async function deleteProject(id) {
+        const project = loadedProjects.find((p) => p.id === id)
+        if (!project) return
+        if (!confirm(`Удалить работу «${project.title}» из портфолио?`)) return
+
+        try {
+          showToast('Удаление проекта...')
+          const portfolioFile = await getFileContent('portfolio.html')
+          
+          // Regex to remove card by title
+          const cardRegex = new RegExp(`\\s*<article class="album-card[^>]*>[\\s\\S]*?<h3>${project.title.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}<\\/h3>[\\s\\S]*?<\\/article>`, 'i')
+          let updated = portfolioFile.content.replace(cardRegex, '')
+          await saveFileContent('portfolio.html', updated, `feat(portfolio): remove project "${project.title}"`)
+
+          // Also remove from index.html if present
+          try {
+            const indexFile = await getFileContent('index.html')
+            let updatedIndex = indexFile.content.replace(cardRegex, '')
+            if (updatedIndex !== indexFile.content) {
+              await saveFileContent('index.html', updatedIndex, `feat(home): remove project "${project.title}"`)
+            }
+          } catch (e) {}
+
+          showToast('Проект успешно удален!')
+          loadPortfolio()
+        } catch (err) {
+          showToast(`Ошибка удаления: ${err.message}`, true)
+        }
+      }
+
+      // ==========================================
+      // 2. MEDIA GALLERY
+      // ==========================================
+      const mediaGridList = document.getElementById('mediaGridList')
+      const quickMediaDropzone = document.getElementById('quickMediaDropzone')
+      const quickMediaFileInput = document.getElementById('quickMediaFileInput')
+
+      quickMediaDropzone.addEventListener('click', () => quickMediaFileInput.click())
+      quickMediaDropzone.addEventListener('dragover', (e) => { e.preventDefault(); quickMediaDropzone.classList.add('dragover'); })
+      quickMediaDropzone.addEventListener('dragleave', () => quickMediaDropzone.classList.remove('dragover'))
+      quickMediaDropzone.addEventListener('drop', (e) => {
+        e.preventDefault()
+        quickMediaDropzone.classList.remove('dragover')
+        if (e.dataTransfer.files?.[0]) uploadQuickMedia(e.dataTransfer.files[0])
+      })
+      quickMediaFileInput.addEventListener('change', () => {
+        if (quickMediaFileInput.files?.[0]) uploadQuickMedia(quickMediaFileInput.files[0])
+      })
+
+      async function uploadQuickMedia(file) {
+        if (!file.type.startsWith('image/')) {
+          showToast('Выберите изображение', true)
+          return
+        }
+        showToast('Загрузка фотографии в images/...')
+        const reader = new FileReader()
+        reader.onload = async (e) => {
+          try {
+            const base64 = e.target.result.split(',')[1]
+            const name = file.name.toLowerCase().replace(/[^a-z0-9_.-]/g, '_')
+            await uploadImageFile(name, base64, `upload ${name}`)
+            showToast(`Фото ${name} успешно загружено!`)
+            loadMediaGallery()
+          } catch (err) {
+            showToast(`Ошибка: ${err.message}`, true)
+          }
+        }
+        reader.readAsDataURL(file)
+      }
+
+      async function loadMediaGallery() {
+        try {
+          mediaGridList.innerHTML = '<div style="color: var(--text-muted); padding: 30px 0; text-align: center; grid-column: 1 / -1;">Загрузка списка фото...</div>'
+          const files = await ghRequest(`contents/images?ref=${REPO_BRANCH}`)
+          const images = files.filter((f) => f.type === 'file' && /\.(jpe?g|png|webp|svg|gif)$/i.test(f.name))
+
+          if (!images.length) {
+            mediaGridList.innerHTML = '<div style="color: var(--text-muted); padding: 30px 0; text-align: center; grid-column: 1 / -1;">В папке images/ нет файлов.</div>'
+            return
+          }
+
+          mediaGridList.innerHTML = images.map((img) => `
+            <div class="media-item">
+              <img class="media-thumb" src="${img.download_url}" alt="${img.name}" loading="lazy" />
+              <div class="media-meta">
+                <div class="media-name" title="${img.name}">${img.name}</div>
+                <div class="media-actions">
+                  <button class="btn btn-secondary btn-sm copy-link-btn" data-url="./images/${img.name}" type="button" style="width: 100%;">
+                    Копировать путь
+                  </button>
+                </div>
+              </div>
+            </div>
+          `).join('')
+
+          document.querySelectorAll('.copy-link-btn').forEach((btn) => {
+            btn.addEventListener('click', async () => {
+              await navigator.clipboard.writeText(btn.dataset.url)
+              showToast(`Путь скопирован: ${btn.dataset.url}`)
+            })
+          })
+        } catch (err) {
+          mediaGridList.innerHTML = `<div style="color: var(--danger); padding: 30px 0; text-align: center; grid-column: 1 / -1;">Ошибка: ${err.message}</div>`
+        }
+      }
+
+      // ==========================================
+      // 3. QUICK TEXTS EDIT
+      // ==========================================
+      const saveQuickTextsBtn = document.getElementById('saveQuickTextsBtn')
+
+      saveQuickTextsBtn.addEventListener('click', async () => {
+        saveQuickTextsBtn.disabled = true
+        saveQuickTextsBtn.textContent = 'Сохранение...'
+
+        const phone = document.getElementById('qtPhone').value.trim()
+        const cleanPhone = phone.replace(/[^0-9]/g, '')
+        const vkLink = document.getElementById('qtVkLink').value.trim()
+        const hours = document.getElementById('qtHours').value.trim()
+        const exp = document.getElementById('qtExp').value.trim()
+        const projects = document.getElementById('qtProjects').value.trim()
+        const fabrics = document.getElementById('qtFabrics').value.trim()
+        const aboutText = document.getElementById('qtAboutText').value.trim()
+
+        try {
+          // 1. Update index.html
+          const indexFile = await getFileContent('index.html')
+          let newIndex = indexFile.content
+
+          // Update phone links
+          newIndex = newIndex.replace(/tel:\+7[0-9]+/g, `tel:+${cleanPhone}`)
+          newIndex = newIndex.replace(/\+7\s?\(981\)\s?421-85-37/g, phone)
+          newIndex = newIndex.replace(/https:\/\/vk\.ru\/shtorymoscovact/g, vkLink)
+
+          // Update stats
+          newIndex = newIndex.replace(/<strong>16 лет<\/strong>/g, `<strong>${exp}</strong>`)
+          newIndex = newIndex.replace(/<strong>Сотни<\/strong>/g, `<strong>${projects}</strong>`)
+          newIndex = newIndex.replace(/<strong>15 000\+<\/strong>/g, `<strong>${fabrics}</strong>`)
+
+          // Update hero about text
+          newIndex = newIndex.replace(
+            /<p class="designer-hero-subtitle">[\s\S]*?<\/p>/,
+            `<p class="designer-hero-subtitle">\n            ${aboutText}\n          </p>`
+          )
+
+          await saveFileContent('index.html', newIndex, `feat(content): update key texts and contacts`)
+
+          // 2. Update contacts.html
+          try {
+            const contactsFile = await getFileContent('contacts.html')
+            let newContacts = contactsFile.content
+            newContacts = newContacts.replace(/tel:\+7[0-9]+/g, `tel:+${cleanPhone}`)
+            newContacts = newContacts.replace(/\+7\s?\(981\)\s?421-85-37/g, phone)
+            newContacts = newContacts.replace(/https:\/\/vk\.ru\/shtorymoscovact/g, vkLink)
+            await saveFileContent('contacts.html', newContacts, `feat(contacts): update contacts`)
+          } catch (e) {}
+
+          showToast('Тексты и контакты успешно сохранены!')
+        } catch (err) {
+          showToast(`Ошибка сохранения: ${err.message}`, true)
+        }
+
+        saveQuickTextsBtn.disabled = false
+        saveQuickTextsBtn.textContent = 'Сохранить тексты на сайт'
+      })
+
+      // ==========================================
+      // 4. DIRECT FILE EDITOR
+      // ==========================================
+      const pageFileSelect = document.getElementById('pageFileSelect')
+      const pageCodeEditor = document.getElementById('pageCodeEditor')
+      const savePageFileBtn = document.getElementById('savePageFileBtn')
+
+      pageFileSelect.addEventListener('change', () => loadCurrentEditorFile())
+
+      async function loadCurrentEditorFile() {
+        const filename = pageFileSelect.value
+        pageCodeEditor.value = 'Загрузка файла...'
+        pageCodeEditor.disabled = true
+        try {
+          const file = await getFileContent(filename)
+          pageCodeEditor.value = file.content
+          pageCodeEditor.disabled = false
+        } catch (err) {
+          pageCodeEditor.value = `Ошибка загрузки файла ${filename}: ${err.message}`
+          pageCodeEditor.disabled = true
+        }
+      }
+
+      savePageFileBtn.addEventListener('click', async () => {
+        const filename = pageFileSelect.value
+        const content = pageCodeEditor.value
+        savePageFileBtn.disabled = true
+        savePageFileBtn.textContent = 'Сохранение...'
+
+        try {
+          await saveFileContent(filename, content, `chore(editor): update ${filename} via admin panel`)
+          showToast(`Файл ${filename} успешно сохранен на GitHub!`)
+        } catch (err) {
+          showToast(`Ошибка: ${err.message}`, true)
+        }
+
+        savePageFileBtn.disabled = false
+        savePageFileBtn.textContent = 'Опубликовать файл'
+      })
+
+      // ==========================================
+      // INITIALIZATION
+      // ==========================================
+      async function initApp() {
+        authScreen.style.display = 'none'
+        appLayout.style.display = 'flex'
+        loadPortfolio()
+      }
+
+      // Auto login if token exists
+      if (githubToken) {
+        checkAuth(githubToken).then((ok) => {
+          if (ok) {
+            initApp()
+          } else {
+            localStorage.removeItem('poshiv_gh_token')
+          }
+        })
+      }
+    </script>
+  </body>
+</html>

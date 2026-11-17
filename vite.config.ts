@@ -14,6 +14,7 @@ export default defineConfig({
         contacts: path.resolve(__dirname, 'contacts.html'),
         reviews: path.resolve(__dirname, 'reviews.html'),
         privacy: path.resolve(__dirname, 'privacy.html'),
+        admin: path.resolve(__dirname, 'admin.html'),
       },
     },
   },
