@@ -395,6 +395,75 @@
         border-top: 1px solid var(--border);
       }
 
+      /* Sticky Save Bar & Badges */
+      .sticky-save-bar {
+        position: sticky;
+        top: 15px;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        background: linear-gradient(135deg, rgba(22, 38, 36, 0.96), rgba(13, 26, 25, 0.98));
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--teal);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(78, 205, 196, 0.2);
+        border-radius: 8px;
+        padding: 12px 20px;
+        margin-bottom: 22px;
+      }
+      .sticky-save-text {
+        display: flex;
+        align-items: center;
+        font-size: 13.5px;
+        color: #fff;
+      }
+      .sticky-save-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .pulse-dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #10b981;
+        box-shadow: 0 0 10px #10b981;
+        margin-right: 10px;
+        animation: pulseDot 1.5s infinite;
+      }
+      @keyframes pulseDot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.35; transform: scale(0.8); }
+      }
+      .badge-status-new {
+        display: inline-block;
+        background: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        font-size: 10px;
+        padding: 2px 7px;
+        border-radius: 3px;
+        margin-bottom: 6px;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+      }
+      .badge-status-modified {
+        display: inline-block;
+        background: rgba(245, 158, 11, 0.2);
+        color: #fbbf24;
+        border: 1px solid rgba(245, 158, 11, 0.4);
+        font-size: 10px;
+        padding: 2px 7px;
+        border-radius: 3px;
+        margin-bottom: 6px;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+      }
+
       /* Modal Dialog */
       .modal-backdrop {
         position: fixed;
@@ -725,11 +794,31 @@
           <div class="panel-head">
             <div>
               <h2>Управление портфолио</h2>
-              <p>Добавляйте новые фотографии выполненных проектов, выбирайте категории и редактируйте описание.</p>
+              <p>Добавляйте новые фотографии, редактируйте или удаляйте работы. После изменений нажмите «Сохранить изменения на сайт».</p>
             </div>
-            <button class="btn btn-primary" id="openAddProjectModal" type="button" style="width: auto;">
-              + Добавить новую работу
-            </button>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+              <button class="btn btn-secondary" id="discardPortfolioChangesBtn" type="button" style="display: none; width: auto;">
+                ↩️ Сбросить изменения
+              </button>
+              <button class="btn btn-primary" id="savePortfolioChangesBtn" type="button" style="display: none; width: auto; background: var(--teal); border-color: var(--teal); color: #0a1413; font-weight: 700;">
+                💾 Сохранить изменения на сайт <span id="unsavedCountBadge" style="margin-left: 6px; background: rgba(0,0,0,0.25); color: #fff; padding: 2px 7px; border-radius: 10px; font-size: 11px;">0</span>
+              </button>
+              <button class="btn btn-primary" id="openAddProjectModal" type="button" style="width: auto;">
+                + Добавить работу
+              </button>
+            </div>
+          </div>
+
+          <!-- Sticky Save Notification Bar -->
+          <div id="portfolioSaveBar" class="sticky-save-bar" style="display: none;">
+            <div class="sticky-save-text">
+              <span class="pulse-dot"></span>
+              <span>Есть несохраненные изменения: <strong id="stickyChangesText" style="color: var(--teal); margin-left: 4px;">0</strong></span>
+            </div>
+            <div class="sticky-save-actions">
+              <button class="btn btn-secondary btn-sm" id="stickyDiscardBtn" type="button">Сбросить</button>
+              <button class="btn btn-primary btn-sm" id="stickySaveBtn" type="button" style="background: var(--teal); color: #0a1413; font-weight: 700;">💾 Сохранить изменения на сайт</button>
+            </div>
           </div>
 
           <!-- Category filter pills -->
@@ -957,7 +1046,7 @@
           </div>
 
           <button class="btn btn-primary" type="submit" id="submitNewProjectBtn">
-            Опубликовать работу на сайте
+            Применить и добавить в список
           </button>
         </form>
       </div>
@@ -1166,10 +1255,52 @@
       })
 
       // ==========================================
-      // 1. PORTFOLIO MANAGEMENT
+      // 1. PORTFOLIO MANAGEMENT (STAGING & BATCH PUBLISH)
       // ==========================================
       const portfolioCardsList = document.getElementById('portfolioCardsList')
       let loadedProjects = []
+      let initialProjectsJson = '[]'
+      let currentPortfolioFilter = 'all'
+
+      // Update UI buttons and notification bar for unsaved changes
+      function updateUnsavedChangesState() {
+        const curBaseline = loadedProjects.map(p => ({
+          title: p.title,
+          desc: p.desc,
+          img: p.img,
+          category: p.category,
+          tag: p.tag
+        }))
+        const hasChanges = JSON.stringify(curBaseline) !== initialProjectsJson
+        const newCount = loadedProjects.filter(p => p.isNew).length
+        const modCount = loadedProjects.filter(p => p.isModified).length
+        const initialCount = JSON.parse(initialProjectsJson || '[]').length
+        const delCount = Math.max(0, initialCount - (loadedProjects.length - newCount))
+        const totalChanges = newCount + modCount + delCount
+
+        const saveBtn = document.getElementById('savePortfolioChangesBtn')
+        const discardBtn = document.getElementById('discardPortfolioChangesBtn')
+        const saveBar = document.getElementById('portfolioSaveBar')
+        const countBadge = document.getElementById('unsavedCountBadge')
+        const stickyText = document.getElementById('stickyChangesText')
+
+        if (hasChanges && totalChanges > 0) {
+          saveBtn.style.display = 'inline-flex'
+          discardBtn.style.display = 'inline-flex'
+          saveBar.style.display = 'flex'
+          countBadge.textContent = totalChanges
+
+          const parts = []
+          if (newCount) parts.push(`+${newCount} добавлено`)
+          if (modCount) parts.push(`${modCount} изменено`)
+          if (delCount) parts.push(`-${delCount} удалено`)
+          stickyText.textContent = `${totalChanges} (${parts.join(', ')})`
+        } else {
+          saveBtn.style.display = 'none'
+          discardBtn.style.display = 'none'
+          saveBar.style.display = 'none'
+        }
+      }
 
       async function loadPortfolio() {
         try {
@@ -1186,16 +1317,26 @@
             const img = card.querySelector('img')?.getAttribute('src') || ''
             const category = card.dataset.category || 'curtains'
             const tag = card.querySelector('.album-card-tag')?.textContent.trim() || CATEGORY_NAMES[category.split(' ')[0]] || 'Шторы'
-            loadedProjects.push({ id: idx, title, desc, img, category, tag })
+            loadedProjects.push({ id: `p_${idx}`, title, desc, img, category, tag })
           })
 
-          renderPortfolioCards('all')
+          initialProjectsJson = JSON.stringify(loadedProjects.map(p => ({
+            title: p.title,
+            desc: p.desc,
+            img: p.img,
+            category: p.category,
+            tag: p.tag
+          })))
+
+          renderPortfolioCards(currentPortfolioFilter)
+          updateUnsavedChangesState()
         } catch (err) {
           portfolioCardsList.innerHTML = `<div style="color: var(--danger); padding: 40px 0; text-align: center; grid-column: 1 / -1;">Ошибка загрузки портфолио: ${err.message}</div>`
         }
       }
 
-      function renderPortfolioCards(filter = 'all') {
+      function renderPortfolioCards(filter = currentPortfolioFilter) {
+        currentPortfolioFilter = filter
         const filtered = loadedProjects.filter((p) => {
           if (filter === 'all') return true
           return (p.category || '').split(' ').includes(filter)
@@ -1211,6 +1352,8 @@
             <img class="project-card-img" src="${p.img}" alt="${p.title}" 
                  onerror="if(!this.dataset.triedRaw){this.dataset.triedRaw='1';this.src='https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${REPO_BRANCH}/' + this.getAttribute('src').replace(/^\\.\\//, '');}else{this.src='./images/product-visualization.jpg';}" />
             <div class="project-card-body">
+              ${p.isNew ? '<span class="badge-status-new">🟢 Новая работа (не сохранено)</span>' : ''}
+              ${p.isModified ? '<span class="badge-status-modified">🟡 Изменено (не сохранено)</span>' : ''}
               <span class="project-card-tag">${p.tag}</span>
               <h3 class="project-card-title">${p.title}</h3>
               <p class="project-card-desc">${p.desc}</p>
@@ -1223,15 +1366,15 @@
         `).join('')
 
         document.querySelectorAll('.edit-project-btn').forEach((btn) => {
-          btn.addEventListener('click', () => openEditProject(parseInt(btn.dataset.id, 10)))
+          btn.addEventListener('click', () => openEditProject(btn.dataset.id))
         })
         document.querySelectorAll('.delete-project-btn').forEach((btn) => {
-          btn.addEventListener('click', () => deleteProject(parseInt(btn.dataset.id, 10)))
+          btn.addEventListener('click', () => deleteProject(btn.dataset.id))
         })
       }
 
       function openEditProject(id) {
-        const project = loadedProjects.find((p) => p.id === id)
+        const project = loadedProjects.find((p) => String(p.id) === String(id))
         if (!project) return
 
         document.getElementById('editProjectId').value = String(project.id)
@@ -1240,8 +1383,8 @@
 
         document.getElementById('modalProjectHeading').textContent = 'Редактировать работу'
         document.getElementById('modalProjectBadge').textContent = 'Редактирование'
-        document.getElementById('modalProjectSubtitle').textContent = 'Измените категорию, название, описание или фото проекта.'
-        document.getElementById('submitNewProjectBtn').textContent = 'Сохранить изменения'
+        document.getElementById('modalProjectSubtitle').textContent = 'Измените поля или фото. Изменения применятся в списке, после чего вы сможете сохранить их на сайт.'
+        document.getElementById('submitNewProjectBtn').textContent = 'Применить изменения'
 
         const catKey = (project.category || '').split(' ')[0] || 'curtains'
         document.getElementById('newProjectCategory').value = catKey
@@ -1286,8 +1429,8 @@
 
         document.getElementById('modalProjectHeading').textContent = 'Добавить в портфолио'
         document.getElementById('modalProjectBadge').textContent = 'Новая работа'
-        document.getElementById('modalProjectSubtitle').textContent = 'Фотография автоматически сохранится в репозитории, а карточка появится в выбранной категории.'
-        document.getElementById('submitNewProjectBtn').textContent = 'Опубликовать работу на сайте'
+        document.getElementById('modalProjectSubtitle').textContent = 'Заполните поля и выберите фото. Работа добавится в список, после чего вы сможете сохранить её на сайт.'
+        document.getElementById('submitNewProjectBtn').textContent = 'Применить и добавить в список'
 
         addProjectForm.reset()
         selectedProjectImageBase64 = null
@@ -1304,7 +1447,7 @@
         if (e.target === addProjectModal) addProjectModal.classList.remove('open')
       })
 
-      // File Selection & Drag & Drop
+      // File Selection & Drag & Drop with Client-Side Auto-Compression
       projectDropzone.addEventListener('click', () => projectFileInput.click())
       projectDropzone.addEventListener('dragover', (e) => { e.preventDefault(); projectDropzone.classList.add('dragover'); })
       projectDropzone.addEventListener('dragleave', () => projectDropzone.classList.remove('dragover'))
@@ -1372,131 +1515,187 @@
         projectFileInput.value = ''
       })
 
-      // Submit project (Add or Edit)
-      addProjectForm.addEventListener('submit', async (e) => {
+      // Submit project (Local Staging: Add or Edit)
+      addProjectForm.addEventListener('submit', (e) => {
         e.preventDefault()
         const editId = document.getElementById('editProjectId').value
         const isEditing = editId !== ''
-        const originalTitle = document.getElementById('editOriginalTitle').value
-        const originalImg = document.getElementById('editOriginalImg').value
+        const category = document.getElementById('newProjectCategory').value
+        const title = document.getElementById('newProjectTitle').value.trim()
+        const desc = document.getElementById('newProjectDesc').value.trim()
+        const categoryTag = CATEGORY_NAMES[category] || 'Шторы'
 
-        if (!isEditing && !selectedProjectImageBase64) {
-          showToast('Пожалуйста, выберите фотографию для проекта', true)
-          return
+        if (isEditing) {
+          const project = loadedProjects.find((p) => String(p.id) === String(editId))
+          if (project) {
+            project.title = title
+            project.desc = desc
+            project.category = category
+            project.tag = categoryTag
+            if (selectedProjectImageBase64) {
+              project.img = projectPreviewImg.src
+              project.pendingImageBase64 = selectedProjectImageBase64
+              project.pendingImageName = selectedProjectImageName
+            }
+            if (!project.isNew) project.isModified = true
+            showToast('Изменения применены в списке. Нажмите «Сохранить изменения на сайт»!')
+          }
+        } else {
+          if (!selectedProjectImageBase64) {
+            showToast('Пожалуйста, выберите фотографию для проекта', true)
+            return
+          }
+          const newId = `proj_${Date.now()}`
+          loadedProjects.unshift({
+            id: newId,
+            title,
+            desc,
+            category,
+            tag: categoryTag,
+            img: projectPreviewImg.src,
+            pendingImageBase64: selectedProjectImageBase64,
+            pendingImageName: selectedProjectImageName,
+            isNew: true
+          })
+          showToast('Работа добавлена в список. Нажмите «Сохранить изменения на сайт»!')
         }
 
-        submitNewProjectBtn.disabled = true
-        submitNewProjectBtn.textContent = isEditing ? '1/3: Сохранение...' : '1/3: Загрузка фото...'
+        addProjectForm.reset()
+        removeProjectPreviewBtn.click()
+        addProjectModal.classList.remove('open')
+        renderPortfolioCards(currentPortfolioFilter)
+        updateUnsavedChangesState()
+      })
+
+      // Delete project (Local Staging)
+      function deleteProject(id) {
+        const project = loadedProjects.find((p) => String(p.id) === String(id))
+        if (!project) return
+        if (!confirm(`Удалить работу «${project.title}» из списка?`)) return
+
+        loadedProjects = loadedProjects.filter((p) => String(p.id) !== String(id))
+        renderPortfolioCards(currentPortfolioFilter)
+        updateUnsavedChangesState()
+        showToast('Работа удалена из списка. Нажмите «Сохранить изменения на сайт»!')
+      }
+
+      // Discard all unsaved changes
+      function discardPortfolioChanges() {
+        if (!confirm('Отменить все несохраненные изменения и вернуть исходный список с сайта?')) return
+        loadPortfolio()
+        showToast('Изменения отменены.')
+      }
+
+      // Batch Save / Push all changes to GitHub
+      async function publishAllPortfolioChanges() {
+        const saveBtn = document.getElementById('savePortfolioChangesBtn')
+        const stickyBtn = document.getElementById('stickySaveBtn')
+        const discardBtn = document.getElementById('discardPortfolioChangesBtn')
+        const stickyDiscard = document.getElementById('stickyDiscardBtn')
+
+        saveBtn.disabled = true
+        stickyBtn.disabled = true
+        discardBtn.disabled = true
+        stickyDiscard.disabled = true
 
         try {
-          // 1. Determine image path: upload new or keep existing
-          let imgPath = originalImg
-          if (selectedProjectImageBase64) {
-            submitNewProjectBtn.textContent = '1/3: Загрузка фото в репозиторий...'
-            imgPath = await uploadImageFile(selectedProjectImageName, selectedProjectImageBase64, `feat(portfolio): upload photo for project`)
+          // 1. Upload any pending photos
+          const pendingUploads = loadedProjects.filter((p) => p.pendingImageBase64)
+          for (let i = 0; i < pendingUploads.length; i++) {
+            const p = pendingUploads[i]
+            const stepText = `Загрузка фото ${i + 1}/${pendingUploads.length}...`
+            saveBtn.textContent = stepText
+            stickyBtn.textContent = stepText
+            const uploadedPath = await uploadImageFile(p.pendingImageName, p.pendingImageBase64, `feat(portfolio): upload photo for "${p.title}"`)
+            p.img = uploadedPath
+            delete p.pendingImageBase64
+            delete p.pendingImageName
           }
 
-          submitNewProjectBtn.textContent = '2/3: Обновление portfolio.html...'
-          const category = document.getElementById('newProjectCategory').value
-          const title = document.getElementById('newProjectTitle').value.trim()
-          const desc = document.getElementById('newProjectDesc').value.trim()
-          const categoryTag = CATEGORY_NAMES[category] || 'Шторы'
-
-          const newCardHtml = `
-          <article class="album-card reveal" data-category="${category}">
-            <img class="album-card-img" src="${imgPath}" alt="${title}" />
+          // 2. Build full album-grid HTML
+          const cardsHtml = loadedProjects.map((p) => `
+          <article class="album-card reveal" data-category="${p.category}">
+            <img class="album-card-img" src="${p.img}" alt="${p.title}" />
             <div class="album-card-body">
-              <span class="album-card-tag">${categoryTag}</span>
-              <h3>${title}</h3>
-              <p>${desc}</p>
-              <button class="album-card-btn vk-order-btn" type="button" data-name="Альбом: ${title}" data-image="${imgPath}">Обсудить похожий проект</button>
+              <span class="album-card-tag">${p.tag}</span>
+              <h3>${p.title}</h3>
+              <p>${p.desc}</p>
+              <button class="album-card-btn vk-order-btn" type="button" data-name="Альбом: ${p.title}" data-image="${p.img}">Обсудить похожий проект</button>
             </div>
-          </article>`
+          </article>`).join('\n')
 
-          // 2. Update portfolio.html
+          const newGridHtml = `<div class="album-grid">\n${cardsHtml}\n  </div>`
+
+          // 3. Update portfolio.html
+          saveBtn.textContent = 'Обновление portfolio.html...'
+          stickyBtn.textContent = 'Обновление portfolio.html...'
           const portfolioFile = await getFileContent('portfolio.html')
-          let updatedPortfolio = portfolioFile.content
+          const updatedPortfolio = portfolioFile.content.replace(/<div class="album-grid">[\s\S]*?<\/div>\s*<\/section>/i, `${newGridHtml}\n</section>`)
+          await saveFileContent('portfolio.html', updatedPortfolio, `feat(portfolio): update portfolio album cards (${loadedProjects.length} works)`)
 
-          if (isEditing) {
-            const escapedOldTitle = originalTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-            const cardRegex = new RegExp(`\\s*<article class="album-card[^>]*>[\\s\\S]*?<h3>${escapedOldTitle}<\\/h3>[\\s\\S]*?<\\/article>`, 'i')
-            if (cardRegex.test(updatedPortfolio)) {
-              updatedPortfolio = updatedPortfolio.replace(cardRegex, '\n' + newCardHtml)
-            } else {
-              updatedPortfolio = updatedPortfolio.replace('<div class="album-grid">', `<div class="album-grid">${newCardHtml}`)
-            }
-            await saveFileContent('portfolio.html', updatedPortfolio, `feat(portfolio): edit project "${title}"`)
-          } else {
-            updatedPortfolio = updatedPortfolio.replace('<div class="album-grid">', `<div class="album-grid">${newCardHtml}`)
-            await saveFileContent('portfolio.html', updatedPortfolio, `feat(portfolio): add new project "${title}"`)
-          }
-
-          // 3. Update index.html
-          submitNewProjectBtn.textContent = '3/3: Обновление главной страницы...'
+          // 4. Update index.html
+          saveBtn.textContent = 'Обновление главной страницы...'
+          stickyBtn.textContent = 'Обновление главной страницы...'
           try {
             const indexFile = await getFileContent('index.html')
             if (indexFile.content.includes('<div class="album-grid">')) {
-              let updatedIndex = indexFile.content
-              if (isEditing) {
-                const escapedOldTitle = originalTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-                const cardRegex = new RegExp(`\\s*<article class="album-card[^>]*>[\\s\\S]*?<h3>${escapedOldTitle}<\\/h3>[\\s\\S]*?<\\/article>`, 'i')
-                if (cardRegex.test(updatedIndex)) {
-                  updatedIndex = updatedIndex.replace(cardRegex, '\n' + newCardHtml)
-                  await saveFileContent('index.html', updatedIndex, `feat(home): edit portfolio project "${title}"`)
-                }
-              } else {
-                updatedIndex = updatedIndex.replace('<div class="album-grid">', `<div class="album-grid">${newCardHtml}`)
-                await saveFileContent('index.html', updatedIndex, `feat(home): add new portfolio project "${title}"`)
-              }
+              const updatedIndex = indexFile.content.replace(/<div class="album-grid">[\s\S]*?<\/div>\s*<\/section>/i, `${newGridHtml}\n</section>`)
+              await saveFileContent('index.html', updatedIndex, `feat(home): update portfolio showcase cards (${loadedProjects.length} works)`)
             }
           } catch (e) {
             console.warn('Could not update index.html:', e)
           }
 
-          submitNewProjectBtn.textContent = 'Синхронизация...'
-          showToast(isEditing ? 'Работа успешно отредактирована!' : 'Работа успешно опубликована!')
-          addProjectForm.reset()
-          removeProjectPreviewBtn.click()
-          addProjectModal.classList.remove('open')
-          loadPortfolio()
+          // Reset change tracking
+          loadedProjects.forEach((p) => {
+            delete p.isNew
+            delete p.isModified
+          })
+          initialProjectsJson = JSON.stringify(loadedProjects.map((p) => ({
+            title: p.title,
+            desc: p.desc,
+            img: p.img,
+            category: p.category,
+            tag: p.tag
+          })))
+
+          showToast('Все изменения успешно сохранены и опубликованы на сайт!')
+          renderPortfolioCards(currentPortfolioFilter)
+          updateUnsavedChangesState()
         } catch (err) {
-          showToast(`Ошибка: ${err.message}`, true)
+          showToast(`Ошибка сохранения: ${err.message}`, true)
         } finally {
-          submitNewProjectBtn.disabled = false
-          submitNewProjectBtn.textContent = 'Опубликовать работу на сайте'
-        }
-      })
-
-      // Delete project
-      async function deleteProject(id) {
-        const project = loadedProjects.find((p) => p.id === id)
-        if (!project) return
-        if (!confirm(`Удалить работу «${project.title}» из портфолио?`)) return
-
-        try {
-          showToast('Удаление проекта...')
-          const portfolioFile = await getFileContent('portfolio.html')
-          
-          // Regex to remove card by title
-          const cardRegex = new RegExp(`\\s*<article class="album-card[^>]*>[\\s\\S]*?<h3>${project.title.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}<\\/h3>[\\s\\S]*?<\\/article>`, 'i')
-          let updated = portfolioFile.content.replace(cardRegex, '')
-          await saveFileContent('portfolio.html', updated, `feat(portfolio): remove project "${project.title}"`)
-
-          // Also remove from index.html if present
-          try {
-            const indexFile = await getFileContent('index.html')
-            let updatedIndex = indexFile.content.replace(cardRegex, '')
-            if (updatedIndex !== indexFile.content) {
-              await saveFileContent('index.html', updatedIndex, `feat(home): remove project "${project.title}"`)
-            }
-          } catch (e) {}
-
-          showToast('Проект успешно удален!')
-          loadPortfolio()
-        } catch (err) {
-          showToast(`Ошибка удаления: ${err.message}`, true)
+          saveBtn.disabled = false
+          stickyBtn.disabled = false
+          discardBtn.disabled = false
+          stickyDiscard.disabled = false
+          saveBtn.innerHTML = `💾 Сохранить изменения на сайт <span id="unsavedCountBadge" style="margin-left: 6px; background: rgba(0,0,0,0.25); color: #fff; padding: 2px 7px; border-radius: 10px; font-size: 11px;">0</span>`
+          stickyBtn.textContent = '💾 Сохранить изменения на сайт'
+          updateUnsavedChangesState()
         }
       }
+
+      // Event listeners for Save & Discard buttons
+      document.getElementById('savePortfolioChangesBtn').addEventListener('click', publishAllPortfolioChanges)
+      document.getElementById('stickySaveBtn').addEventListener('click', publishAllPortfolioChanges)
+      document.getElementById('discardPortfolioChangesBtn').addEventListener('click', discardPortfolioChanges)
+      document.getElementById('stickyDiscardBtn').addEventListener('click', discardPortfolioChanges)
+
+      // Warn before closing tab if unsaved changes exist
+      window.addEventListener('beforeunload', (e) => {
+        const curBaseline = loadedProjects.map(p => ({
+          title: p.title,
+          desc: p.desc,
+          img: p.img,
+          category: p.category,
+          tag: p.tag
+        }))
+        if (JSON.stringify(curBaseline) !== initialProjectsJson) {
+          e.preventDefault()
+          e.returnValue = 'У вас есть несохраненные изменения в портфолио. Сохранить их перед выходом?'
+          return e.returnValue
+        }
+      })
 
       // ==========================================
       // 2. MEDIA GALLERY
