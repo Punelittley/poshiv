@@ -1080,13 +1080,16 @@
         const cleanName = filename.toLowerCase().replace(/[^a-z0-9_.-]/g, '_')
         const path = `images/${cleanName}`
         let sha = undefined
-        try {
-          const files = await ghRequest(`contents/images?ref=${REPO_BRANCH}`)
-          if (Array.isArray(files)) {
-            const found = files.find((f) => f.name.toLowerCase() === cleanName)
-            if (found) sha = found.sha
-          }
-        } catch (e) {}
+        // If not a uniquely generated project name, check if it already exists
+        if (!cleanName.startsWith('project_')) {
+          try {
+            const files = await ghRequest(`contents/images?ref=${REPO_BRANCH}`)
+            if (Array.isArray(files)) {
+              const found = files.find((f) => f.name.toLowerCase() === cleanName)
+              if (found) sha = found.sha
+            }
+          } catch (e) {}
+        }
 
         const body = {
           message: message || `upload image ${cleanName}`,
@@ -1205,7 +1208,8 @@
 
         portfolioCardsList.innerHTML = filtered.map((p) => `
           <article class="project-card" data-id="${p.id}">
-            <img class="project-card-img" src="${p.img}" alt="${p.title}" onerror="this.src='./images/product-visualization.jpg'" />
+            <img class="project-card-img" src="${p.img}" alt="${p.title}" 
+                 onerror="if(!this.dataset.triedRaw){this.dataset.triedRaw='1';this.src='https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${REPO_BRANCH}/' + this.getAttribute('src').replace(/^\\.\\//, '');}else{this.src='./images/product-visualization.jpg';}" />
             <div class="project-card-body">
               <span class="project-card-tag">${p.tag}</span>
               <h3 class="project-card-title">${p.title}</h3>
@@ -1318,14 +1322,44 @@
           showToast('Выберите изображение (JPG, PNG или WEBP)', true)
           return
         }
-        selectedProjectImageName = `project_${Date.now()}_${file.name}`
+        const cleanBaseName = file.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9_.-]/g, '_')
+        selectedProjectImageName = `project_${Date.now()}_${cleanBaseName}.jpg`
+
         const reader = new FileReader()
         reader.onload = (e) => {
-          const result = e.target.result
-          selectedProjectImageBase64 = result.split(',')[1]
-          projectPreviewImg.src = result
-          projectUploadPreview.style.display = 'block'
-          projectDropzone.style.display = 'none'
+          const img = new Image()
+          img.onload = () => {
+            const maxDim = 1600
+            let w = img.width
+            let h = img.height
+            if (w > maxDim || h > maxDim) {
+              if (w > h) {
+                h = Math.round((h * maxDim) / w)
+                w = maxDim
+              } else {
+                w = Math.round((w * maxDim) / h)
+                h = maxDim
+              }
+            }
+            const canvas = document.createElement('canvas')
+            canvas.width = w
+            canvas.height = h
+            const ctx = canvas.getContext('2d')
+            ctx.drawImage(img, 0, 0, w, h)
+            const compressed = canvas.toDataURL('image/jpeg', 0.86)
+            selectedProjectImageBase64 = compressed.split(',')[1]
+            projectPreviewImg.src = compressed
+            projectUploadPreview.style.display = 'block'
+            projectDropzone.style.display = 'none'
+          }
+          img.onerror = () => {
+            const rawResult = e.target.result
+            selectedProjectImageBase64 = rawResult.split(',')[1]
+            projectPreviewImg.src = rawResult
+            projectUploadPreview.style.display = 'block'
+            projectDropzone.style.display = 'none'
+          }
+          img.src = e.target.result
         }
         reader.readAsDataURL(file)
       }
@@ -1352,15 +1386,17 @@
         }
 
         submitNewProjectBtn.disabled = true
-        submitNewProjectBtn.textContent = isEditing ? 'Сохранение изменений...' : 'Публикация работы...'
+        submitNewProjectBtn.textContent = isEditing ? '1/3: Сохранение...' : '1/3: Загрузка фото...'
 
         try {
           // 1. Determine image path: upload new or keep existing
           let imgPath = originalImg
           if (selectedProjectImageBase64) {
+            submitNewProjectBtn.textContent = '1/3: Загрузка фото в репозиторий...'
             imgPath = await uploadImageFile(selectedProjectImageName, selectedProjectImageBase64, `feat(portfolio): upload photo for project`)
           }
 
+          submitNewProjectBtn.textContent = '2/3: Обновление portfolio.html...'
           const category = document.getElementById('newProjectCategory').value
           const title = document.getElementById('newProjectTitle').value.trim()
           const desc = document.getElementById('newProjectDesc').value.trim()
@@ -1396,6 +1432,7 @@
           }
 
           // 3. Update index.html
+          submitNewProjectBtn.textContent = '3/3: Обновление главной страницы...'
           try {
             const indexFile = await getFileContent('index.html')
             if (indexFile.content.includes('<div class="album-grid">')) {
@@ -1416,6 +1453,7 @@
             console.warn('Could not update index.html:', e)
           }
 
+          submitNewProjectBtn.textContent = 'Синхронизация...'
           showToast(isEditing ? 'Работа успешно отредактирована!' : 'Работа успешно опубликована!')
           addProjectForm.reset()
           removeProjectPreviewBtn.click()
@@ -1423,10 +1461,10 @@
           loadPortfolio()
         } catch (err) {
           showToast(`Ошибка: ${err.message}`, true)
+        } finally {
+          submitNewProjectBtn.disabled = false
+          submitNewProjectBtn.textContent = 'Опубликовать работу на сайте'
         }
-
-        submitNewProjectBtn.disabled = false
-        submitNewProjectBtn.textContent = 'Опубликовать работу на сайте'
       })
 
       // Delete project
