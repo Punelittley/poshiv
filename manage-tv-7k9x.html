@@ -1629,21 +1629,22 @@
           // 3. Update portfolio.html
           saveBtn.textContent = 'Обновление portfolio.html...'
           stickyBtn.textContent = 'Обновление portfolio.html...'
+          delete currentFileSha['portfolio.html']
           const portfolioFile = await getFileContent('portfolio.html')
           const updatedPortfolio = portfolioFile.content.replace(/<div class="album-grid">[\s\S]*?<\/div>\s*<\/section>/i, `${newGridHtml}\n</section>`)
           await saveFileContent('portfolio.html', updatedPortfolio, `feat(portfolio): update portfolio album cards (${loadedProjects.length} works)`)
 
+          // Short pause to allow GitHub to update the branch head ref
+          await new Promise((resolve) => setTimeout(resolve, 800))
+
           // 4. Update index.html
           saveBtn.textContent = 'Обновление главной страницы...'
           stickyBtn.textContent = 'Обновление главной страницы...'
-          try {
-            const indexFile = await getFileContent('index.html')
-            if (indexFile.content.includes('<div class="album-grid">')) {
-              const updatedIndex = indexFile.content.replace(/<div class="album-grid">[\s\S]*?<\/div>\s*<\/section>/i, `${newGridHtml}\n</section>`)
-              await saveFileContent('index.html', updatedIndex, `feat(home): update portfolio showcase cards (${loadedProjects.length} works)`)
-            }
-          } catch (e) {
-            console.warn('Could not update index.html:', e)
+          delete currentFileSha['index.html']
+          const indexFile = await getFileContent('index.html')
+          if (indexFile.content.includes('<div class="album-grid">')) {
+            const updatedIndex = indexFile.content.replace(/<div class="album-grid">[\s\S]*?<\/div>\s*<\/section>/i, `${newGridHtml}\n</section>`)
+            await saveFileContent('index.html', updatedIndex, `feat(home): update portfolio showcase cards (${loadedProjects.length} works)`)
           }
 
           // Reset change tracking
